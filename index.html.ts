@@ -115,7 +115,7 @@ Object.assign(gpuSpecs, {
 });
 Object.assign(gpuSpecs, {
   "rtx 4060": { vram: "8GB", arch: "Ada Lovelace", perf: "Mid-range", release: 2023, tdp: "115W", pcie: "4.0 x8", msrp: "$299", price2025: "$230", psu: "450W" },
-  "rtx 4060 ti": { vram: "8GB", arch: "Ada Lovelace", perf: "Upper mid", release: 2023, tdp: "160W", pcie: "4.0 x8", msrp: "$399", price2025: "$300", psu: "550W" },
+  "rtx 4060 ti": { vram: "8/16GB", arch: "Ada Lovelace", perf: "Upper mid", release: 2023, tdp: "160W", pcie: "4.0 x8", msrp: "$399", price2025: "$300", psu: "550W" },
   "rtx 4070": { vram: "12GB", arch: "Ada Lovelace", perf: "High-end", release: 2023, tdp: "200W", pcie: "4.0 x16", msrp: "$599", price2025: "$450", psu: "600W" },
   "rtx 4070 super": { vram: "12GB", arch: "Ada Lovelace", perf: "High-end", release: 2024, tdp: "220W", pcie: "4.0 x16", msrp: "$599", price2025: "$500", psu: "650W" },
   "rtx 4070 ti": { vram: "12GB", arch: "Ada Lovelace", perf: "High-end", release: 2023, tdp: "285W", pcie: "4.0 x16", msrp: "$799", price2025: "$600", psu: "750W" },
@@ -156,15 +156,15 @@ Object.assign(gpuSpecs, {
   "arc a380": { vram: "6GB", arch: "Alchemist", perf: "Entry+", release: 2022, tdp: "75W", pcie: "4.0 x8", msrp: "$139", price2025: "$90", psu: "400W" },
   "arc a580": { vram: "8GB", arch: "Alchemist", perf: "Mid-range", release: 2023, tdp: "185W", pcie: "4.0 x16", msrp: "$179", price2025: "$120", psu: "500W" },
   "arc a750": { vram: "8GB", arch: "Alchemist", perf: "Mid-high", release: 2022, tdp: "225W", pcie: "4.0 x16", msrp: "$249", price2025: "$150", psu: "600W" },
-  "arc a770": { vram: "16GB", arch: "Alchemist", perf: "High-end", release: 2022, tdp: "225W", pcie: "4.0 x16", msrp: "$349", price2025: "$180", psu: "600W" },
+  "arc a770": { vram: "8/16GB", arch: "Alchemist", perf: "High-end", release: 2022, tdp: "225W", pcie: "4.0 x16", msrp: "$349", price2025: "$180", psu: "600W" },
 
-  "arc b570": { vram: "8GB", arch: "Battlemage", perf: "Mid-range", release: 2025, tdp: "180W", pcie: "5.0 x8", msrp: "$249", price2025: "$200", psu: "550W" },
+  "arc b570": { vram: "10GB", arch: "Battlemage", perf: "Mid-range", release: 2025, tdp: "180W", pcie: "5.0 x8", msrp: "$249", price2025: "$200", psu: "550W" },
   "arc b580": { vram: "12GB", arch: "Battlemage", perf: "High-end", release: 2025, tdp: "250W", pcie: "5.0 x16", msrp: "$349", price2025: "$250", psu: "650W" }
 });
 Object.assign(gpuSpecs, {
   "rtx 5050": { vram: "8GB", arch: "Ada Lovelace Refresh", perf: "Entry+", release: 2025, tdp: "100W", pcie: "4.0 x8", msrp: "$229", price2025: "$190", psu: "450W" },
-  "rtx 5060": { vram: "12GB", arch: "Ada Lovelace Refresh", perf: "Mid", release: 2025, tdp: "130W", pcie: "4.0 x16", msrp: "$299", price2025: "$250", psu: "500W" },
-  "rtx 5060 ti": { vram: "12GB", arch: "Ada Lovelace Refresh", perf: "Mid+", release: 2025, tdp: "160W", pcie: "4.0 x16", msrp: "$349", price2025: "$300", psu: "550W" },
+  "rtx 5060": { vram: "8GB", arch: "Ada Lovelace Refresh", perf: "Mid", release: 2025, tdp: "130W", pcie: "4.0 x16", msrp: "$299", price2025: "$250", psu: "500W" },
+  "rtx 5060 ti": { vram: "8/16GB", arch: "Ada Lovelace Refresh", perf: "Mid+", release: 2025, tdp: "160W", pcie: "4.0 x16", msrp: "$349", price2025: "$300", psu: "550W" },
   "rtx 5070": { vram: "12GB", arch: "Ada Lovelace Refresh", perf: "Upper mid", release: 2025, tdp: "200W", pcie: "4.0 x16", msrp: "$449", price2025: "$370", psu: "600W" },
   "rtx 5070 ti": { vram: "16GB", arch: "Ada Lovelace Refresh", perf: "High-end", release: 2025, tdp: "225W", pcie: "4.0 x16", msrp: "$549", price2025: "$420", psu: "650W" },
   "rtx 5080": { vram: "16GB", arch: "Ada Lovelace Refresh", perf: "Enthusiast", release: 2025, tdp: "320W", pcie: "4.0 x16", msrp: "$799", price2025: "$650", psu: "750W" },
@@ -183,7 +183,7 @@ Object.assign(gpuSpecs, {
     psu: "500W"
   },
   "rx 9070": {
-    vram: "12 GB",
+    vram: "16 GB",
     arch: "RDNA 4",
     perf: "Upper mid",
     release: 2025,
