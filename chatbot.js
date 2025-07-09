@@ -104,3 +104,4 @@ function send() {
   input.value = '';
   chat.scrollTop = chat.scrollHeight;
 }
+window.send = send;
