@@ -1,22 +1,91 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>GPU Chatbot</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="gpuspecs.js"></script>
+  <script defer src="chatbot.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+    #chat-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #chat-box {
+      background-color: #2c2c2c;
+      border-radius: 10px;
+      padding: 15px;
+      height: 400px;
+      overflow-y: scroll;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin: 10px 0;
+    }
+    .user { color: #00bfff; }
+    .bot { color: #7fff00; }
+    #input-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #444;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #666;
+    }
+    #action-buttons {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  </style>
 </head>
-<body class="dark">
-  <div class="chat-container">
-    <div class="header">
-      <h1>GPU Chatbot 💻</h1>
-      <button id="toggleMode">☀️/🌙</button>
+<body>
+  <div id="chat-container">
+    <div id="chat-box"></div>
+    <div id="input-container">
+      <input type="text" id="user-input" placeholder="Ask something about GPUs...">
+      <button onclick="sendMessage()">Send</button>
     </div>
-    <div id="chatbox" class="chatbox"></div>
-    <input type="text" id="userInput" placeholder="Ask me anything..." autofocus/>
+    <div id="action-buttons">
+      <button onclick="sendPreset('/tdp 200')">TDP Filter</button>
+      <button onclick="sendPreset('/psu 500')">PSU Filter</button>
+      <button onclick="sendPreset('rx 6700 xt vs rtx 4060')">Compare Example</button>
+    </div>
   </div>
-  <script src="gpuspecs.js"></script>
-  <script src="chatbot.js"></script>
+  <script>
+    const input = document.getElementById("user-input");
+    input.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    function sendPreset(command) {
+      input.value = command;
+      sendMessage();
+    }
+  </script>
 </body>
 </html>
+
