@@ -1,76 +1,77 @@
+const chatLog = document.getElementById("chat-log");
+const userInput = document.getElementById("user-input");
+const sendBtn = document.getElementById("send-btn");
+const tdpBtn = document.getElementById("tdp-filter");
+const psuBtn = document.getElementById("psu-filter");
+const compareBtn = document.getElementById("compare-btn");
 
-const chatbox = document.getElementById("chatbox");
-const input = document.getElementById("userInput");
-const toggle = document.getElementById("toggleMode");
+function appendMessage(sender, text) {
+  const msg = document.createElement("div");
+  msg.className = sender;
+  msg.innerText = text;
+  chatLog.appendChild(msg);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
 
-toggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  document.body.classList.toggle("light");
+function botReply(input) {
+  const msg = input.trim().toLowerCase();
+  if (msg === "hello") return "Hello, how can I help you today?";
+  if (msg === "credit") return "Created by Hola Bro. 🤖 Powered by ChatGPT.";
+  if (msg.startsWith("spec ")) {
+    const name = msg.slice(5);
+    const spec = gpuSpecs[name];
+    if (spec) {
+      return `📊 ${name.toUpperCase()}\nVRAM: ${spec.vram}\nArch: ${spec.arch}\nPerformance: ${spec.perf}\nRelease: ${spec.release}\nTDP: ${spec.tdp}\nPCIe: ${spec.pcie}\nMSRP: ${spec.msrp}\nPrice (2025): ${spec.price2025}\nPSU Req: ${spec.psu}`;
+    } else {
+      return `❌ GPU '${name}' not found.`;
+    }
+  }
+  if (msg.startsWith("compare ")) {
+    const parts = msg.slice(8).split(" vs ");
+    if (parts.length === 2) {
+      const a = gpuSpecs[parts[0]];
+      const b = gpuSpecs[parts[1]];
+      if (a && b) {
+        return `📊 Comparing ${parts[0].toUpperCase()} vs ${parts[1].toUpperCase()}\n\n` +
+               `${parts[0]} - VRAM: ${a.vram}, Perf: ${a.perf}, TDP: ${a.tdp}, Price: ${a.price2025}\n` +
+               `${parts[1]} - VRAM: ${b.vram}, Perf: ${b.perf}, TDP: ${b.tdp}, Price: ${b.price2025}`;
+      } else {
+        return "❌ One or both GPUs not found.";
+      }
+    }
+  }
+  return "❓ I didn’t understand. Try commands like 'spec rtx 3060', 'compare rtx 3060 vs rx 6600', 'credit', or use the buttons.";
+}
+
+sendBtn.onclick = () => {
+  const input = userInput.value;
+  if (!input) return;
+  appendMessage("user-msg", "🧑 " + input);
+  const reply = botReply(input);
+  appendMessage("bot-msg", "🤖 " + reply);
+  userInput.value = "";
+};
+
+userInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") sendBtn.click();
 });
 
-function appendMessage(sender, message) {
-  const msgDiv = document.createElement("div");
-  msgDiv.className = "message " + sender;
-  msgDiv.innerHTML = (sender === "user" ? "🧑‍💻 " : "🤖 ") + message;
-  chatbox.appendChild(msgDiv);
-  chatbox.scrollTop = chatbox.scrollHeight;
-}
+tdpBtn.onclick = () => {
+  let results = Object.entries(gpuSpecs)
+    .filter(([_, spec]) => parseInt(spec.tdp) <= 200)
+    .map(([name, spec]) => `• ${name} (${spec.tdp})`);
+  appendMessage("bot-msg", "🤖 GPUs with TDP ≤ 200W:\n" + results.join("\n"));
+};
 
-input.addEventListener("keypress", function (e) {
-  if (e.key === "Enter") {
-    const text = input.value.trim();
-    if (!text) return;
-    appendMessage("user", text);
-    handleCommand(text.toLowerCase());
-    input.value = "";
-  }
-});
+psuBtn.onclick = () => {
+  let results = Object.entries(gpuSpecs)
+    .filter(([_, spec]) => parseInt(spec.psu) <= 500)
+    .map(([name, spec]) => `• ${name} (PSU: ${spec.psu})`);
+  appendMessage("bot-msg", "🤖 GPUs with PSU ≤ 500W:\n" + results.join("\n"));
+};
 
-function handleCommand(input) {
-  if (input.startsWith("/spec ")) {
-    const gpu = input.replace("/spec ", "").trim();
-    const data = gpuSpecs[gpu];
-    appendMessage("bot", data ? JSON.stringify(data, null, 2).replaceAll('\n', '<br>') : "GPU not found.");
-  } else if (input.includes(" vs ")) {
-    const [gpu1, gpu2] = input.split(" vs ");
-    const g1 = gpuSpecs[gpu1.trim()];
-    const g2 = gpuSpecs[gpu2.trim()];
-    appendMessage("bot", g1 && g2 ? compareSpecs(gpu1.trim(), g1, gpu2.trim(), g2) : "One or both GPUs not found.");
-  } else if (input.startsWith("/price ")) {
-    const max = parseInt(input.replace("/price ", ""));
-    const matches = Object.entries(gpuSpecs).filter(([k, v]) => v.price <= max);
-    appendMessage("bot", matches.length ? matches.map(([k]) => k).join(", ") : "No GPUs under that price.");
-  } else if (input.startsWith("/psu ")) {
-    const watt = parseInt(input.replace("/psu ", ""));
-    const matches = Object.entries(gpuSpecs).filter(([k, v]) => v.recommendedPSU <= watt);
-    appendMessage("bot", matches.length ? matches.map(([k]) => k).join(", ") : "No GPUs fit that PSU.");
-  } else if (input.startsWith("/tdp ")) {
-    const tdp = parseInt(input.replace("/tdp ", ""));
-    const matches = Object.entries(gpuSpecs).filter(([k, v]) => v.tdp <= tdp);
-    appendMessage("bot", matches.length ? matches.map(([k]) => k).join(", ") : "No GPUs under that TDP.");
-  } else if (input === "/help") {
-    appendMessage("bot", `📋 Commands:<br>
-    /spec <gpu><br>
-    <gpu1> vs <gpu2><br>
-    /price <amount><br>
-    /psu <wattage><br>
-    /tdp <watts><br>
-    /test, /joke, /credit`);
-  } else if (input === "/test") {
-    appendMessage("bot", "✅ I'm working fine!");
-  } else if (input === "/joke") {
-    appendMessage("bot", "Why did the GPU break up with the CPU? Because it needed more *space* 💔😂");
-  } else if (input === "/credit") {
-    appendMessage("bot", "Made by Beacon Cake ⚡");
-  } else {
-    appendMessage("bot", "❓ Unknown command. Type /help for a list of commands.");
-  }
-}
+compareBtn.onclick = () => {
+  userInput.value = "compare rtx 3060 vs rx 6600";
+  sendBtn.click();
+};
 
-function compareSpecs(g1Name, g1, g2Name, g2) {
-  return `🔍 ${g1Name} vs ${g2Name}<br>
-  VRAM: ${g1.vram} vs ${g2.vram}<br>
-  TDP: ${g1.tdp}W vs ${g2.tdp}W<br>
-  Price: $${g1.price} vs $${g2.price}<br>
-  Recommended PSU: ${g1.recommendedPSU}W vs ${g2.recommendedPSU}W`;
-}
