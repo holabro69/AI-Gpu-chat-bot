@@ -31,6 +31,5 @@ Object.assign(gpuSpecs, {
   "rtx 2080 ti":      { vram: "11GB", arch: "Turing", perf: "Ultra high-end", release: 2018, tdp: "260W", msrp: "$999", price2025: "$250", psu: "650W", performance: { gaming: 92, editing: 81, ai: 64 } }
 });
 
-// RTX 30, RTX 40, RTX 5000, AMD, and Intel Arc are all included in your message above - 
 
 
