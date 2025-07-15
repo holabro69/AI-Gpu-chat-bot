@@ -32,5 +32,4 @@ Object.assign(gpuSpecs, {
 });
 
 // RTX 30, RTX 40, RTX 5000, AMD, and Intel Arc are all included in your message above - 
-# (For brevity, let me know if you want me to paste all, but if you want the full file, I will save the whole long file!)
 
