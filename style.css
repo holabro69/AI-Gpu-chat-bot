@@ -164,3 +164,33 @@ button:hover,button:focus {
   letter-spacing: 0.13px;
 }
 ::selection { background: #3970cc85; }
+body.light-mode {
+  background: linear-gradient(120deg,#f8fafc 0%,#e7ecf7 100%);
+  color: #222338;
+}
+body.light-mode .container {
+  background: rgba(255,255,255,0.95);
+  border: 1.5px solid #b2c8e6;
+}
+body.light-mode .msg.bot {
+  background: #f4f8ff;
+  color: #29416e;
+  border-color: #b2c8e6;
+}
+body.light-mode .msg.user {
+  background: linear-gradient(93deg,#429ffe 0%,#55f7db 100%);
+  color: #fff;
+}
+body.light-mode #userInput {
+  background: #f4f8ff;
+  color: #23253d;
+  border: 1.1px solid #b2c8e6;
+}
+body.light-mode button {
+  background: #e7ecf7;
+  color: #29416e;
+  border: 1.1px solid #b2c8e6;
+}
+body.light-mode #footer, body.light-mode .disclaimer {
+  color: #5971aa;
+}
