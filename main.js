@@ -12,13 +12,36 @@ function addMessage(sender, text) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-// Bot reply logic
+// Bot reply logic — now supports "which better"
 function getBotReply(input) {
   input = input.trim().toLowerCase();
-  if (input === "help") {
-    return "Type a GPU name (e.g. 'gtx 1050 ti') for specs, or try 'gtx 1060 vs 1070' for comparison. Use the filter buttons below for quick lists.";
+
+  // "which better" logic
+  if (/which( one)? is? better/.test(input) || input.includes("which better")) {
+    // Try to parse the GPUs (supports "or", "vs", or commas)
+    let gpus = input.split(/which( one)? is? better|which better|or|vs|,/i)
+      .filter(s => s.trim().length)
+      .map(s => s.replace(/[\?]/g, '').trim());
+    if (gpus.length < 2) return "Please specify two GPUs to compare.";
+    const gpu1 = gpus[0];
+    const gpu2 = gpus[1];
+    const d1 = gpuSpecs[gpu1];
+    const d2 = gpuSpecs[gpu2];
+    if (!d1 || !d2) return "One or both GPUs not found.";
+    // Winner function
+    function winnerText(a, b) {
+      if (a === undefined || b === undefined) return "N/A";
+      if (a > b) return `${gpu1.toUpperCase()}`;
+      if (a < b) return `${gpu2.toUpperCase()}`;
+      return "Tie";
+    }
+    return `Which is better? ${gpu1.toUpperCase()} vs ${gpu2.toUpperCase()}
+- Gaming: ${winnerText(d1.performance.gaming, d2.performance.gaming)}
+- Editing: ${winnerText(d1.performance.editing, d2.performance.editing)}
+- AI: ${winnerText(d1.performance.ai, d2.performance.ai)}`;
   }
-  // Comparison
+
+  // "vs" comparison
   if (input.includes("vs")) {
     const [gpu1, gpu2] = input.split("vs").map(x => x.trim());
     const d1 = gpuSpecs[gpu1];
@@ -29,10 +52,12 @@ function getBotReply(input) {
 - Perf: ${d1.perf} vs ${d2.perf}
 - Gaming: ${d1.performance.gaming} vs ${d2.performance.gaming}
 - Editing: ${d1.performance.editing} vs ${d2.performance.editing}
+- AI: ${(d1.performance.ai ?? "N/A")} vs ${(d2.performance.ai ?? "N/A")}
 - TDP: ${d1.tdp} vs ${d2.tdp}
 - PSU: ${d1.psu} vs ${d2.psu}
 - Price (2025): ${d1.price2025} vs ${d2.price2025}`;
   }
+
   // Single GPU info
   const data = gpuSpecs[input];
   if (data) {
@@ -41,11 +66,18 @@ function getBotReply(input) {
 - Perf: ${data.perf}
 - Gaming: ${data.performance.gaming}
 - Editing: ${data.performance.editing}
+- AI: ${data.performance.ai !== undefined ? data.performance.ai : "N/A"}
 - TDP: ${data.tdp}
 - PSU: ${data.psu}
 - MSRP: ${data.msrp}
 - Price (2025): ${data.price2025}`;
   }
+
+  // Help command
+  if (input === "help") {
+    return "Type a GPU name (e.g. 'gtx 1050 ti') for specs, try 'gtx 1060 vs 1070' for a direct comparison, or 'which better rtx 4060 or rx 7600' for a winner! Use filter buttons for quick lists.";
+  }
+
   return "Sorry, I don't have info for that GPU. Try 'help' for commands.";
 }
 
