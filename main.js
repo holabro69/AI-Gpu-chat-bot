@@ -18,18 +18,33 @@ function getBotReply(input) {
   if (input === "help") {
     return "Type a GPU name (e.g. 'gtx 1050 ti') for specs, or try 'gtx 1060 vs 1070' for comparison. Use the filter buttons below for quick lists.";
   }
-  // Simple comparison
+  // Comparison
   if (input.includes("vs")) {
     const [gpu1, gpu2] = input.split("vs").map(x => x.trim());
     const d1 = gpuSpecs[gpu1];
     const d2 = gpuSpecs[gpu2];
     if (!d1 || !d2) return "One or both GPUs not found.";
-    return `${gpu1.toUpperCase()} vs ${gpu2.toUpperCase()}\n- VRAM: ${d1.vram} vs ${d2.vram}\n- Perf: ${d1.perf} vs ${d2.perf}\n- Gaming: ${d1.performance.gaming} vs ${d2.performance.gaming}\n- Editing: ${d1.performance.editing} vs ${d2.performance.editing}`;
+    return `${gpu1.toUpperCase()} vs ${gpu2.toUpperCase()}
+- VRAM: ${d1.vram} vs ${d2.vram}
+- Perf: ${d1.perf} vs ${d2.perf}
+- Gaming: ${d1.performance.gaming} vs ${d2.performance.gaming}
+- Editing: ${d1.performance.editing} vs ${d2.performance.editing}
+- TDP: ${d1.tdp} vs ${d2.tdp}
+- PSU: ${d1.psu} vs ${d2.psu}
+- Price (2025): ${d1.price2025} vs ${d2.price2025}`;
   }
   // Single GPU info
   const data = gpuSpecs[input];
   if (data) {
-    return `${input.toUpperCase()}\n- VRAM: ${data.vram}\n- Perf: ${data.perf}\n- Gaming: ${data.performance.gaming}\n- Editing: ${data.performance.editing}\n- TDP: ${data.tdp}\n- PSU: ${data.psu}\n- MSRP: ${data.msrp}\n- Price (2025): ${data.price2025}`;
+    return `${input.toUpperCase()}
+- VRAM: ${data.vram}
+- Perf: ${data.perf}
+- Gaming: ${data.performance.gaming}
+- Editing: ${data.performance.editing}
+- TDP: ${data.tdp}
+- PSU: ${data.psu}
+- MSRP: ${data.msrp}
+- Price (2025): ${data.price2025}`;
   }
   return "Sorry, I don't have info for that GPU. Try 'help' for commands.";
 }
@@ -46,7 +61,7 @@ userInput.addEventListener("keydown", function(e) {
   }
 });
 
-// Filter Price Button
+// Price Filter Button
 document.getElementById("filterPrice").addEventListener("click", function() {
   let results = [];
   for (let name in gpuSpecs) {
@@ -59,7 +74,7 @@ document.getElementById("filterPrice").addEventListener("click", function() {
   addMessage("bot", results.length ? "GPUs under $100 (2025):\n" + results.join("\n") : "No GPUs under $100 found.");
 });
 
-// Filter PSU Button
+// PSU Filter Button
 document.getElementById("filterPSU").addEventListener("click", function() {
   let results = [];
   for (let name in gpuSpecs) {
@@ -68,10 +83,10 @@ document.getElementById("filterPSU").addEventListener("click", function() {
       results.push(`${name.toUpperCase()}: PSU ${gpuSpecs[name].psu}`);
     }
   }
-  addMessage("bot", results.length ? "GPUs that need ≤350W PSU:\n" + results.join("\n") : "No GPUs found with PSU ≤350W.");
+  addMessage("bot", results.length ? "GPUs needing ≤350W PSU:\n" + results.join("\n") : "No GPUs found with PSU ≤350W.");
 });
 
-// Filter TDP Button
+// TDP Filter Button
 document.getElementById("filterTDP").addEventListener("click", function() {
   let results = [];
   for (let name in gpuSpecs) {
@@ -83,13 +98,12 @@ document.getElementById("filterTDP").addEventListener("click", function() {
   addMessage("bot", results.length ? "GPUs with TDP ≤120W:\n" + results.join("\n") : "No GPUs found with TDP ≤120W.");
 });
 
-// Theme toggle button
+// Theme toggle button (NO chat message!)
 document.getElementById("toggleMode").addEventListener("click", function() {
   document.body.classList.toggle("light-mode");
-  addMessage("bot", "Theme toggled!");
 });
 
-// Help Button (last button in .btns)
+// Help Button
 document.querySelectorAll('.btns button')[4].addEventListener("click", function() {
   addMessage('user', 'help');
   addMessage('bot', getBotReply('help'));
