@@ -3,6 +3,7 @@
 const chatbox = document.getElementById("chatbox");
 const userInput = document.getElementById("userInput");
 
+// Add chat message
 function addMessage(sender, text) {
   const msg = document.createElement("div");
   msg.className = `msg ${sender}`;
@@ -11,10 +12,11 @@ function addMessage(sender, text) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
+// Bot reply logic
 function getBotReply(input) {
   input = input.trim().toLowerCase();
   if (input === "help") {
-    return "Type a GPU name (e.g. 'gtx 1050 ti') for specs, or try 'gtx 1060 vs 1070' for comparison.";
+    return "Type a GPU name (e.g. 'gtx 1050 ti') for specs, or try 'gtx 1060 vs 1070' for comparison. Use the filter buttons below for quick lists.";
   }
   // Simple comparison
   if (input.includes("vs")) {
@@ -22,17 +24,17 @@ function getBotReply(input) {
     const d1 = gpuSpecs[gpu1];
     const d2 = gpuSpecs[gpu2];
     if (!d1 || !d2) return "One or both GPUs not found.";
-    return `${gpu1.toUpperCase()} vs ${gpu2.toUpperCase()}\n- VRAM: ${d1.vram} vs ${d2.vram}\n- Perf: ${d1.perf} vs ${d2.perf}\n- Gaming: ${d1.performance.gaming} vs ${d2.performance.gaming}`;
+    return `${gpu1.toUpperCase()} vs ${gpu2.toUpperCase()}\n- VRAM: ${d1.vram} vs ${d2.vram}\n- Perf: ${d1.perf} vs ${d2.perf}\n- Gaming: ${d1.performance.gaming} vs ${d2.performance.gaming}\n- Editing: ${d1.performance.editing} vs ${d2.performance.editing}`;
   }
   // Single GPU info
   const data = gpuSpecs[input];
   if (data) {
-    return `${input.toUpperCase()}\n- VRAM: ${data.vram}\n- Perf: ${data.perf}\n- Gaming: ${data.performance.gaming}\n- Editing: ${data.performance.editing}\n- TDP: ${data.tdp}\n- PSU: ${data.psu}`;
+    return `${input.toUpperCase()}\n- VRAM: ${data.vram}\n- Perf: ${data.perf}\n- Gaming: ${data.performance.gaming}\n- Editing: ${data.performance.editing}\n- TDP: ${data.tdp}\n- PSU: ${data.psu}\n- MSRP: ${data.msrp}\n- Price (2025): ${data.price2025}`;
   }
   return "Sorry, I don't have info for that GPU. Try 'help' for commands.";
 }
 
-// This part was missing! It connects the chat input to the bot logic.
+// Chat input event
 userInput.addEventListener("keydown", function(e) {
   if (e.key === "Enter") {
     const text = userInput.value;
@@ -44,3 +46,51 @@ userInput.addEventListener("keydown", function(e) {
   }
 });
 
+// Filter Price Button
+document.getElementById("filterPrice").addEventListener("click", function() {
+  let results = [];
+  for (let name in gpuSpecs) {
+    let priceStr = gpuSpecs[name].price2025.replace("$", "");
+    let price = parseInt(priceStr);
+    if (price <= 100) {
+      results.push(`${name.toUpperCase()}: ${gpuSpecs[name].price2025}`);
+    }
+  }
+  addMessage("bot", results.length ? "GPUs under $100 (2025):\n" + results.join("\n") : "No GPUs under $100 found.");
+});
+
+// Filter PSU Button
+document.getElementById("filterPSU").addEventListener("click", function() {
+  let results = [];
+  for (let name in gpuSpecs) {
+    let psu = parseInt(gpuSpecs[name].psu.replace("W", ""));
+    if (psu <= 350) {
+      results.push(`${name.toUpperCase()}: PSU ${gpuSpecs[name].psu}`);
+    }
+  }
+  addMessage("bot", results.length ? "GPUs that need ≤350W PSU:\n" + results.join("\n") : "No GPUs found with PSU ≤350W.");
+});
+
+// Filter TDP Button
+document.getElementById("filterTDP").addEventListener("click", function() {
+  let results = [];
+  for (let name in gpuSpecs) {
+    let tdp = parseInt(gpuSpecs[name].tdp.replace("W", ""));
+    if (tdp <= 120) {
+      results.push(`${name.toUpperCase()}: TDP ${gpuSpecs[name].tdp}`);
+    }
+  }
+  addMessage("bot", results.length ? "GPUs with TDP ≤120W:\n" + results.join("\n") : "No GPUs found with TDP ≤120W.");
+});
+
+// Theme toggle button
+document.getElementById("toggleMode").addEventListener("click", function() {
+  document.body.classList.toggle("light-mode");
+  addMessage("bot", "Theme toggled!");
+});
+
+// Help Button (last button in .btns)
+document.querySelectorAll('.btns button')[4].addEventListener("click", function() {
+  addMessage('user', 'help');
+  addMessage('bot', getBotReply('help'));
+});
