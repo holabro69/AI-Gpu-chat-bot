@@ -22,16 +22,17 @@ function getBotReply(input) {
     const d1 = gpuSpecs[gpu1];
     const d2 = gpuSpecs[gpu2];
     if (!d1 || !d2) return "One or both GPUs not found.";
-    return `**${gpu1.toUpperCase()}** vs **${gpu2.toUpperCase()}**\n- VRAM: ${d1.vram} vs ${d2.vram}\n- Perf: ${d1.perf} vs ${d2.perf}\n- Gaming: ${d1.performance.gaming} vs ${d2.performance.gaming}`;
+    return `${gpu1.toUpperCase()} vs ${gpu2.toUpperCase()}\n- VRAM: ${d1.vram} vs ${d2.vram}\n- Perf: ${d1.perf} vs ${d2.perf}\n- Gaming: ${d1.performance.gaming} vs ${d2.performance.gaming}`;
   }
   // Single GPU info
   const data = gpuSpecs[input];
   if (data) {
-    return `**${input.toUpperCase()}**\n- VRAM: ${data.vram}\n- Perf: ${data.perf}\n- Gaming: ${data.performance.gaming}\n- Editing: ${data.performance.editing}\n- TDP: ${data.tdp}\n- PSU: ${data.psu}`;
+    return `${input.toUpperCase()}\n- VRAM: ${data.vram}\n- Perf: ${data.perf}\n- Gaming: ${data.performance.gaming}\n- Editing: ${data.performance.editing}\n- TDP: ${data.tdp}\n- PSU: ${data.psu}`;
   }
   return "Sorry, I don't have info for that GPU. Try 'help' for commands.";
 }
 
+// This part was missing! It connects the chat input to the bot logic.
 userInput.addEventListener("keydown", function(e) {
   if (e.key === "Enter") {
     const text = userInput.value;
@@ -39,6 +40,7 @@ userInput.addEventListener("keydown", function(e) {
     addMessage("user", text);
     const reply = getBotReply(text);
     addMessage("bot", reply);
-    userInp
-
+    userInput.value = "";
+  }
+});
 
