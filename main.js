@@ -1,11 +1,13 @@
 let chartObj = null;
 
-// Initial Bot Greeting
 window.onload = () => {
-  addMessage('bot', "Hello! I was made by Holabro and powered by ChatGPT.<br>Type commands like <b>spec 4090</b>, <b>best 400 700</b>, <b>3060 vs 6600</b>, use <b>💰 Price/TDP Filter</b> or <b>🔄 Compare</b> for advanced features.");
+  addMessage('bot', `
+    Hello! I was made by Holabro and powered by ChatGPT.<br>
+    Type: <b>spec 4090</b> | <b>best 400 700</b> | <b>3060 vs 6650 xt</b> | <b>price 200 400</b> | <b>tdp 100 180</b><br>
+    Or use the buttons below!
+  `);
 };
 
-// Chatbox Functions
 function addMessage(who, text) {
   const chatbox = document.getElementById('chatbox');
   const msgDiv = document.createElement('div');
@@ -15,14 +17,50 @@ function addMessage(who, text) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-// Simple Command Handler with Fuzzy GPU Name Search
 function getBotReply(cmd) {
   cmd = cmd.trim().toLowerCase();
-  // compare [gpu1] vs [gpu2]
-  if (cmd.includes(' vs ')) {
-    const [g1, g2] = cmd.split(' vs ').map(t=>t.replace(/^spec /,'').trim());
-    return doCompare(fuzzyFindGPU(g1), fuzzyFindGPU(g2));
+
+  // 1. Compare: "vs" or "compare"
+  if (cmd.includes(' vs ') || cmd.startsWith('compare ')) {
+    let g1, g2;
+    if (cmd.includes(' vs ')) {
+      [g1, g2] = cmd.split(' vs ').map(s => fuzzyFindGPU(s.trim()));
+    } else {
+      let [_, name1, ...rest] = cmd.split(' ');
+      let name2 = rest.join(' ');
+      g1 = fuzzyFindGPU(name1);
+      g2 = fuzzyFindGPU(name2);
+    }
+    return doCompare(g1, g2);
   }
+
+  // 2. Range queries: price, tdp, psu, vram
+  if (cmd.startsWith('price ')) {
+    const [_, min, max] = cmd.split(' ');
+    const gpus = filterByRange("price2025", min, max, "$");
+    showChart(gpus.map(g => g.name));
+    return formatGPUResults(gpus, "price2025", "$");
+  }
+  if (cmd.startsWith('tdp ')) {
+    const [_, min, max] = cmd.split(' ');
+    const gpus = filterByRange("tdp", min, max, "W");
+    showChart(gpus.map(g => g.name));
+    return formatGPUResults(gpus, "tdp", "W");
+  }
+  if (cmd.startsWith('psu ')) {
+    const [_, min, max] = cmd.split(' ');
+    const gpus = filterByRange("psu", min, max, "W");
+    showChart(gpus.map(g => g.name));
+    return formatGPUResults(gpus, "psu", "W");
+  }
+  if (cmd.startsWith('vram ')) {
+    const [_, min, max] = cmd.split(' ');
+    const gpus = filterByRange("vram", min, max, "GB");
+    showChart(gpus.map(g => g.name));
+    return formatGPUResults(gpus, "vram", "GB");
+  }
+
+  // 3. spec command (fuzzy)
   if (cmd.startsWith('spec ')) {
     let key = cmd.replace('spec ','').trim();
     let match = fuzzyFindGPU(key);
@@ -33,32 +71,38 @@ function getBotReply(cmd) {
     }
     else return "Bro, GPU not found!";
   }
+
+  // 4. best [min] [max] (by price)
   if (cmd.startsWith('best ')) {
-    // best min max  e.g. best 400 700
     const [_, min, max] = cmd.split(' ');
     const gpus = filterByPrice(+min, +max);
     showChart(gpus.map(g=>g.name));
-    return formatGPUResults(gpus);
+    return formatGPUResults(gpus, "price2025", "$");
   }
+
+  // 5. help
   if (cmd.includes('help')) {
-    return `Commands: <br>
-    <b>spec [gpu]</b> — see details (e.g. <b>spec 4090</b>, <b>spec 3060</b>, <b>spec 6600 xt</b>)<br>
-    <b>best [min] [max]</b> — best GPUs between price (e.g. <b>best 400 700</b>)<br>
-    <b>[gpu1] vs [gpu2]</b> — compare GPUs (e.g. <b>4060 vs 6600 xt</b>)<br>
-    Use <b>💰 Price/TDP Filter</b> or <b>🔄 Compare</b> for more.<br>
-    <b>📤 Export CSV</b> to download all GPU data.<br>
-    <b>🌗 Theme</b> to toggle dark/light mode.<br>
+    return `
+      <b>Commands:</b><br>
+      <b>spec [gpu]</b> — see details (e.g. <b>spec 4090</b>, <b>spec 3060</b>, <b>spec 6600 xt</b>)<br>
+      <b>[gpu1] vs [gpu2]</b> or <b>compare [gpu1] [gpu2]</b> — side-by-side compare<br>
+      <b>price [min] [max]</b> — filter by price<br>
+      <b>tdp [min] [max]</b> — filter by TDP<br>
+      <b>psu [min] [max]</b> — filter by PSU<br>
+      <b>vram [min] [max]</b> — filter by VRAM<br>
+      <b>best [min] [max]</b> — best GPUs by price<br>
+      Or use the buttons below.<br>
     `;
   }
+
   return "Sorry dawg, I didn't get that. Type <b>help</b> for commands!";
 }
 
-// Fuzzy GPU finder: match on partial or number
+// --- Fuzzy GPU Finder
 function fuzzyFindGPU(query) {
-  // Try exact match first
+  if (!query) return null;
   if (gpuSpecs[query]) return query;
 
-  // Fuzzy match: compact everything, search for the query inside each GPU key
   let searchKey = query.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
   for (const gpuName of Object.keys(gpuSpecs)) {
     const compactName = gpuName.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
@@ -76,6 +120,7 @@ function formatSpec(name, spec) {
   MSRP: ${spec.msrp} | Est. Price 2025: ${spec.price2025}<br>
   Performance: Gaming ${spec.performance.gaming} | Editing ${spec.performance.editing}${spec.performance.ai ? " | AI "+spec.performance.ai : ""}`;
 }
+
 function filterByPrice(min, max) {
   return Object.entries(gpuSpecs)
     .filter(([_, spec]) => {
@@ -84,12 +129,31 @@ function filterByPrice(min, max) {
     })
     .map(([name, spec]) => ({ name, ...spec }));
 }
-function formatGPUResults(gpus) {
-  if (!gpus.length) return "No GPUs found for that range bro!";
-  return gpus.map(g => `<b>${g.name.toUpperCase()}</b>: $${g.price2025.replace('$','')} / ${g.tdp} / ${g.vram}`).join('<br>');
+
+// --- NEW: Range Filter (for tdp, price, psu, vram)
+function filterByRange(field, min, max, unit) {
+  min = +min;
+  max = +max;
+  return Object.entries(gpuSpecs)
+    .filter(([_, spec]) => {
+      let val = spec[field];
+      if (!val) return false;
+      val = +val.toString().replace(unit,"").replace("$","");
+      if (isNaN(val)) return false;
+      return (!isNaN(min) ? val >= min : true) && (!isNaN(max) ? val <= max : true);
+    })
+    .map(([name, spec]) => ({ name, ...spec }));
 }
 
-// Input Handler
+// --- Filter Results Format
+function formatGPUResults(gpus, field, unit) {
+  if (!gpus.length) return "No GPUs found for that range bro!";
+  return gpus.map(g =>
+    `<b>${g.name.toUpperCase()}</b>: ${field? (g[field] ? g[field] : "") : ""}${unit||""} / ${g.tdp} / ${g.vram}`
+  ).join('<br>');
+}
+
+// --- Input Handler
 document.getElementById('userInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     const val = this.value;
@@ -99,7 +163,7 @@ document.getElementById('userInput').addEventListener('keydown', function(e) {
   }
 });
 
-// Modal Logic - Filter
+// --- Modal Logic - Filter
 const filterModal = document.getElementById('filterModal');
 document.getElementById('filterPrice').onclick = () => filterModal.style.display = 'flex';
 document.getElementById('closeFilter').onclick = () => filterModal.style.display = 'none';
@@ -125,12 +189,12 @@ document.getElementById('applyFilter').onclick = () => {
   showChart(result.map(g=>g.name));
 };
 
-// Theme Toggle
+// --- Theme Toggle
 document.getElementById('toggleTheme').onclick = () => {
   document.body.classList.toggle('light');
 };
 
-// Compare Modal Logic
+// --- Compare Modal Logic
 const compareModal = document.getElementById('compareModal');
 document.getElementById('compareBtn').onclick = () => {
   compareModal.style.display = 'flex';
@@ -140,11 +204,12 @@ document.getElementById('compareBtn').onclick = () => {
 };
 document.getElementById('closeCompare').onclick = () => compareModal.style.display = 'none';
 document.getElementById('compareGo').onclick = () => {
-  const gpu1 = document.getElementById('gpuCompare1').value.trim().toLowerCase();
-  const gpu2 = document.getElementById('gpuCompare2').value.trim().toLowerCase();
-  document.getElementById('compareResult').innerHTML = doCompare(fuzzyFindGPU(gpu1), fuzzyFindGPU(gpu2));
-  showChart([fuzzyFindGPU(gpu1), fuzzyFindGPU(gpu2)]);
+  const gpu1 = fuzzyFindGPU(document.getElementById('gpuCompare1').value.trim().toLowerCase());
+  const gpu2 = fuzzyFindGPU(document.getElementById('gpuCompare2').value.trim().toLowerCase());
+  document.getElementById('compareResult').innerHTML = doCompare(gpu1, gpu2);
+  showChart([gpu1, gpu2]);
 };
+
 function doCompare(g1, g2) {
   if (!g1 || !g2 || !gpuSpecs[g1] || !gpuSpecs[g2]) return "Bro, one or both GPUs not found!";
   const s1 = gpuSpecs[g1], s2 = gpuSpecs[g2];
@@ -166,7 +231,7 @@ function doCompare(g1, g2) {
   `;
 }
 
-// Export CSV
+// --- Export CSV
 document.getElementById('exportBtn').onclick = () => {
   let rows = [["GPU","VRAM","Arch","Perf","Release","TDP","PSU","MSRP","2025 Price","Gaming","Editing","AI"]];
   for(const [name, spec] of Object.entries(gpuSpecs)) {
@@ -195,7 +260,7 @@ document.getElementById('exportBtn').onclick = () => {
   setTimeout(()=>a.remove(),500);
 };
 
-// Chart Drawing (Chart.js)
+// --- Chart Drawing (Chart.js)
 function showChart(namesArr) {
   const ctx = document.getElementById('perfChart');
   if (!namesArr || !namesArr.length || !namesArr[0]) {
@@ -230,3 +295,4 @@ function showChart(namesArr) {
     }
   });
 }
+
