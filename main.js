@@ -1,20 +1,19 @@
 // ==== BEGIN main.js ====
 
-// Example: gpuSpecs should have both price2025_new and price2025_used for price filters.
-const chatbox = document.getElementById("chatbox");
-const userInput = document.getElementById("userInput");
-
-// Theme toggler
+// Handles theme
 document.getElementById("toggleMode").onclick = function () {
   document.body.classList.toggle("dark");
 };
 
-// Get the selected price condition (used/new)
+const chatbox = document.getElementById("chatbox");
+const userInput = document.getElementById("userInput");
+
+// Get used/new price
 function getSelectedCondition() {
   return document.querySelector('input[name="condition"]:checked').value;
 }
 
-// Display chat messages
+// Display chat
 function addMessage(sender, text) {
   const msgDiv = document.createElement("div");
   msgDiv.className = "msg " + sender;
@@ -23,10 +22,11 @@ function addMessage(sender, text) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-// Display filtered GPU results in chat
-function showResultsInChat(results) {
+// Display GPU results + chart
+function showResultsInChat(results, compareType) {
   if (results.length === 0) {
     addMessage("bot", "No GPUs found for your filter!");
+    clearChart();
     return;
   }
   let html = "<b>Matching GPUs:</b><ul style='margin-top:4px'>";
@@ -35,18 +35,62 @@ function showResultsInChat(results) {
   });
   html += "</ul>";
   addMessage("bot", html);
+
+  // Draw chart if we have at least 2 results or if compareType is forced
+  if (results.length >= 2 || compareType === 'force') {
+    drawChart(results);
+  } else {
+    clearChart();
+  }
 }
 
-// Parse chat commands (price filter, tdp filter, spec, vs, etc)
+// Chart.js GPU bar chart
+let chartInstance = null;
+function drawChart(gpus) {
+  const ctx = document.getElementById('perfChart').getContext('2d');
+  const labels = gpus.map(g => g.name.toUpperCase());
+  const gaming = gpus.map(g => g.performance?.gaming || 0);
+  const editing = gpus.map(g => g.performance?.editing || 0);
+  const ai = gpus.map(g => g.performance?.ai || 0);
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Gaming', data: gaming, backgroundColor: '#007bff99' },
+        { label: 'Editing', data: editing, backgroundColor: '#28a74599' },
+        { label: 'AI', data: ai, backgroundColor: '#ff980099' }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true },
+        title: { display: true, text: 'GPU Performance Score (higher is better)' }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+function clearChart() {
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = null;
+}
+
+// Parse chat commands
 function handleUserInput(input) {
   input = input.trim().toLowerCase();
   if (!input) return;
 
-  // --- Price filter: price min max [used|new] ---
+  // Price filter
   let match = input.match(/price\s+(\d+)\s+(\d+)(?:\s+(used|new))?/i);
   if (match) {
-    let min = parseInt(match[1]);
-    let max = parseInt(match[2]);
+    let min = parseInt(match[1]), max = parseInt(match[2]);
     let condition = match[3] || getSelectedCondition();
     let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
     let results = [];
@@ -60,11 +104,10 @@ function handleUserInput(input) {
     return;
   }
 
-  // --- TDP filter: tdp min max ---
+  // TDP filter
   match = input.match(/tdp\s+(\d+)\s+(\d+)/i);
   if (match) {
-    let min = parseInt(match[1]);
-    let max = parseInt(match[2]);
+    let min = parseInt(match[1]), max = parseInt(match[2]);
     let results = [];
     for (const [key, spec] of Object.entries(gpuSpecs)) {
       let tdp = parseInt(spec.tdp);
@@ -74,11 +117,10 @@ function handleUserInput(input) {
     return;
   }
 
-  // --- PSU filter: psu min max ---
+  // PSU filter
   match = input.match(/psu\s+(\d+)\s+(\d+)/i);
   if (match) {
-    let min = parseInt(match[1]);
-    let max = parseInt(match[2]);
+    let min = parseInt(match[1]), max = parseInt(match[2]);
     let results = [];
     for (const [key, spec] of Object.entries(gpuSpecs)) {
       let psu = parseInt(spec.psu);
@@ -88,18 +130,14 @@ function handleUserInput(input) {
     return;
   }
 
-  // --- Single GPU spec: spec [model/number] ---
+  // Single GPU spec
   match = input.match(/spec\s+([a-zA-Z0-9 ]+)/i);
   if (match) {
     let term = match[1].trim();
-    // Allow searching by just the number (e.g. 'spec 3060')
-    let found = Object.entries(gpuSpecs).find(([key, spec]) =>
+    let found = Object.entries(gpuSpecs).find(([key]) =>
       key.includes(term) || key.replace(/\s/g, '').includes(term.replace(/\s/g, ''))
     );
-    if (!found) {
-      // Try fallback: only match the number
-      found = Object.entries(gpuSpecs).find(([key, spec]) => key.includes(term));
-    }
+    if (!found) found = Object.entries(gpuSpecs).find(([key]) => key.includes(term));
     if (found) {
       let [key, spec] = found;
       addMessage("bot", `
@@ -108,13 +146,15 @@ function handleUserInput(input) {
         TDP: ${spec.tdp}, PSU: ${spec.psu}, Price (New): ${spec.price2025_new || spec.msrp}, Price (Used): ${spec.price2025_used || "-"}<br>
         Gaming: ${spec.performance?.gaming || '-'}, Editing: ${spec.performance?.editing || '-'}, AI: ${spec.performance?.ai || '-'}
       `);
+      drawChart([{ name: key, ...spec }]);
     } else {
       addMessage("bot", "GPU not found!");
+      clearChart();
     }
     return;
   }
 
-  // --- VS Comparison: [model1] vs [model2] ---
+  // VS Comparison
   match = input.match(/([a-zA-Z0-9 ]+)\s+vs\s+([a-zA-Z0-9 ]+)/i);
   if (match) {
     let gpu1 = match[1].trim(), gpu2 = match[2].trim();
@@ -126,37 +166,43 @@ function handleUserInput(input) {
         <b>${a}:</b> VRAM ${specA.vram}, TDP ${specA.tdp}, PSU ${specA.psu}, Price: ${specA.price2025_new || specA.msrp}, Perf: ${specA.perf}<br>
         <b>${b}:</b> VRAM ${specB.vram}, TDP ${specB.tdp}, PSU ${specB.psu}, Price: ${specB.price2025_new || specB.msrp}, Perf: ${specB.perf}<br>
       `);
+      drawChart([
+        { name: a, ...specA },
+        { name: b, ...specB }
+      ]);
     } else {
       addMessage("bot", "Comparison failed! (Check your input)");
+      clearChart();
     }
     return;
   }
 
-  // --- Help ---
-  if (input === "help") {
+  // Help & Credit/About
+  if (["help"].includes(input)) {
     addMessage("bot", `
       <b>GPU Bot Help</b><br>
       <ul>
-        <li><b>spec 4090</b> - Show spec for a GPU</li>
-        <li><b>3070 vs 4060</b> - Compare two GPUs</li>
-        <li><b>price 100 400</b> - List GPUs in $100-400 (uses selected condition)</li>
+        <li><b>spec 4090</b> - Show spec for a GPU + chart</li>
+        <li><b>3070 vs 4060</b> - Compare two GPUs with chart</li>
+        <li><b>price 100 400</b> - List GPUs in $100-400 (uses condition selector)</li>
         <li><b>price 100 400 used</b> - List used GPUs in that range</li>
         <li><b>tdp 150 250</b> - List GPUs with TDP 150-250W</li>
         <li><b>psu 300 600</b> - List GPUs with PSU 300-600W</li>
         <li><b>help</b> - Show this help</li>
       </ul>
     `);
+    clearChart();
     return;
   }
-
-  // --- Credits / About ---
-  if (input === "credit" || input === "credits" || input === "about" || input === "hello") {
+  if (["credit", "credits", "about", "hello"].includes(input)) {
     addMessage("bot", "👋 Hello, I was made by <b>Holabro</b> and powered by <b>ChatGPT</b>.");
+    clearChart();
     return;
   }
 
-  // --- Fallback ---
+  // Fallback
   addMessage("bot", "Unknown command. Type <b>help</b> for available commands.");
+  clearChart();
 }
 
 // User input event
@@ -169,7 +215,7 @@ userInput.addEventListener("keydown", function (e) {
   }
 });
 
-// Filter buttons (will prompt user for min/max then filter)
+// Filter buttons
 function promptFilter(type) {
   let min = prompt(`Minimum ${type}?`);
   let max = prompt(`Maximum ${type}?`);
@@ -200,7 +246,7 @@ document.getElementById("filterPrice").onclick = () => promptFilter("Price");
 document.getElementById("filterTDP").onclick = () => promptFilter("TDP");
 document.getElementById("filterPSU").onclick = () => promptFilter("PSU");
 
-// Core filter function for price, respects used/new selector
+// Price filter with Used/New
 function filterByPrice(min, max) {
   let condition = getSelectedCondition();
   let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
@@ -217,4 +263,3 @@ function filterByPrice(min, max) {
 }
 
 // ==== END main.js ====
-
