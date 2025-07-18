@@ -12,12 +12,16 @@
     <h2>GPU Data Chat Bot 💬</h2>
     <div id="chatbox"></div>
     <div class="input-group">
-      <input type="text" id="userInput" autocomplete="off" placeholder="Try: 'spec rtx 4090', 'best 400 700', 'help'">
+      <input type="text" id="userInput" autocomplete="off" placeholder="Try: 'spec rtx 4090', '4070 super vs 7900 xt', 'best 400 700', 'help'">
     </div>
     <div class="btns">
+      <button id="toggleTheme">🌗 Theme</button>
       <button id="filterPrice">💰 Price/TDP Filter</button>
+      <button id="compareBtn">🔄 Compare</button>
+      <button id="exportBtn">📤 Export CSV</button>
       <button onclick="addMessage('user','help');addMessage('bot',getBotReply('help'));">❔ Help</button>
     </div>
+    <canvas id="perfChart" style="width:100%;max-width:350px;display:none;margin:20px 0 0 0;"></canvas>
     <!-- Filter Modal -->
     <div id="filterModal" class="modal" style="display:none;">
       <div class="modal-content">
@@ -32,6 +36,19 @@
         </div>
       </div>
     </div>
+    <!-- Compare Modal -->
+    <div id="compareModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Compare GPUs</h3>
+        <label>GPU 1: <input type="text" id="gpuCompare1" placeholder="e.g. rtx 4070" /></label>
+        <label>GPU 2: <input type="text" id="gpuCompare2" placeholder="e.g. rx 7900 xt" /></label>
+        <div>
+          <button id="compareGo">Compare</button>
+          <button id="closeCompare">Close</button>
+        </div>
+        <div id="compareResult"></div>
+      </div>
+    </div>
     <div class="disclaimer">
       ⚠️ <b>Disclaimer:</b> This tool is for quick reference only.<br>
       Do <b>not rely on this data for critical decisions</b>; info may be incomplete or inaccurate.<br>
@@ -41,7 +58,9 @@
       🏗️ Built by <strong>Holabro</strong> | 🤖 Powered by <strong>ChatGPT</strong>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="gpu-data.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
+
