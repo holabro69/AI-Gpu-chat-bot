@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,16 +11,26 @@
   <div class="container">
     <h2>GPU Data Chat Bot 💬</h2>
     <div id="chatbox"></div>
-    <canvas id="perfChart"></canvas>
     <div class="input-group">
-      <input type="text" id="userInput" autocomplete="off" placeholder="Try: 'spec rtx 4090', '4070 super vs 7900 xt', 'best 400 700', 'help'">
+      <input type="text" id="userInput" autocomplete="off" placeholder="Try: 'spec rtx 4090', 'best 400 700', 'help'">
     </div>
     <div class="btns">
-      <button id="toggleMode">🌗 Theme</button>
-      <button id="filterPrice">💰 Price</button>
-      <button id="filterPSU">🔌 PSU</button>
-      <button id="filterTDP">🔥 TDP</button>
+      <button id="filterPrice">💰 Price/TDP Filter</button>
       <button onclick="addMessage('user','help');addMessage('bot',getBotReply('help'));">❔ Help</button>
+    </div>
+    <!-- Filter Modal -->
+    <div id="filterModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Filter GPUs</h3>
+        <label>Min Price ($): <input type="number" id="minPrice" min="0" /></label>
+        <label>Max Price ($): <input type="number" id="maxPrice" min="0" /></label>
+        <label>Min TDP (W): <input type="number" id="minTDP" min="0" /></label>
+        <label>Max TDP (W): <input type="number" id="maxTDP" min="0" /></label>
+        <div>
+          <button id="applyFilter">Apply</button>
+          <button id="closeFilter">Close</button>
+        </div>
+      </div>
     </div>
     <div class="disclaimer">
       ⚠️ <b>Disclaimer:</b> This tool is for quick reference only.<br>
@@ -32,7 +41,6 @@
       🏗️ Built by <strong>Holabro</strong> | 🤖 Powered by <strong>ChatGPT</strong>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="gpu-data.js"></script>
   <script src="main.js"></script>
 </body>
