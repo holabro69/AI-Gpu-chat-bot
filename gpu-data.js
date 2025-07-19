@@ -147,7 +147,7 @@ Object.assign(gpuSpecs, {
 
 // RX 9000 Series (NEW PRICE ONLY)
 Object.assign(gpuSpecs, {
-  "rx 9060 xt":    { vram: "8GB", arch: "RDNA 4", perf: "Mid-range", release: 2025, tdp: "150W", msrp: "$299", price2025_new: "$300", psu: "500W", performance: { gaming: 112, editing: 100, ai: 87 } },
+  "rx 9060 xt":    { vram: "8GB/16", arch: "RDNA 4", perf: "Mid-range", release: 2025, tdp: "150W", msrp: "$299", price2025_new: "$300", psu: "500W", performance: { gaming: 112, editing: 100, ai: 87 } },
   "rx 9070":       { vram: "16GB", arch: "RDNA 4", perf: "Upper mid", release: 2025, tdp: "160W", msrp: "$549", price2025_new: "$500", psu: "550W", performance: { gaming: 122, editing: 109, ai: 96 } },
   "rx 9070 xt":    { vram: "16GB", arch: "RDNA 4", perf: "High-end", release: 2025, tdp: "304W", msrp: "$599", price2025_new: "$550", psu: "750W", performance: { gaming: 129, editing: 115, ai: 102 } }
 });
@@ -162,6 +162,8 @@ Object.assign(gpuSpecs, {
   "arc a580":      { vram: "8GB", arch: "Alchemist", perf: "Mid-range", release: 2023, tdp: "185W", msrp: "$179", price2025_new: "$120", price2025_used: "$90", psu: "500W", performance: { gaming: 49, editing: 34, ai: 33 } },
   "arc a750":      { vram: "8GB", arch: "Alchemist", perf: "Mid-high", release: 2022, tdp: "225W", msrp: "$249", price2025_new: "$150", price2025_used: "$110", psu: "600W", performance: { gaming: 58, editing: 43, ai: 38 } },
   "arc a770":      { vram: "16GB", arch: "Alchemist", perf: "High-end", release: 2022, tdp: "225W", msrp: "$349", price2025_new: "$180", price2025_used: "$135", psu: "600W", performance: { gaming: 66, editing: 49, ai: 42 } }
-});
+  "arc b570":      { vram: "10GB", arch: "Battlemage", perf: "Mid-range", release: 2025, tdp: "180W", msrp: "$249", price2025: "$200", psu: "550W", performance: { gaming: 75, editing: 58, ai: 50 } },
+  "arc b580":      { vram: "12GB", arch: "Battlemage", perf: "High-end", release: 2025, tdp: "250W", msrp: "$349", price2025: "$250", psu: "650W", performance: { gaming: 87, editing: 69, ai: 61 } }
+  });
 
 
