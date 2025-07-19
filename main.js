@@ -1,19 +1,32 @@
 // ==== BEGIN main.js ====
 
-// Handles theme
-document.getElementById("toggleMode").onclick = function () {
-  document.body.classList.toggle("dark");
+// ==== Theme Switcher ====
+const themeBtn = document.getElementById("toggleMode");
+themeBtn.onclick = function () {
+  document.body.classList.toggle("light");
+  if (document.body.classList.contains("light")) {
+    localStorage.setItem("theme", "light");
+  } else {
+    localStorage.setItem("theme", "dark");
+  }
 };
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("theme");
+  if (saved === "light") {
+    document.body.classList.add("light");
+  } else {
+    document.body.classList.remove("light");
+  }
+});
 
+// Handles chatbox & commands (rest is your original code)
 const chatbox = document.getElementById("chatbox");
 const userInput = document.getElementById("userInput");
 
-// Get used/new price
 function getSelectedCondition() {
   return document.querySelector('input[name="condition"]:checked').value;
 }
 
-// Display chat
 function addMessage(sender, text) {
   const msgDiv = document.createElement("div");
   msgDiv.className = "msg " + sender;
@@ -22,7 +35,6 @@ function addMessage(sender, text) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-// Display GPU results + chart
 function showResultsInChat(results, compareType) {
   if (results.length === 0) {
     addMessage("bot", "No GPUs found for your filter!");
@@ -36,7 +48,6 @@ function showResultsInChat(results, compareType) {
   html += "</ul>";
   addMessage("bot", html);
 
-  // Draw chart if we have at least 2 results or if compareType is forced
   if (results.length >= 2 || compareType === 'force') {
     drawChart(results);
   } else {
@@ -44,7 +55,6 @@ function showResultsInChat(results, compareType) {
   }
 }
 
-// Chart.js GPU bar chart
 let chartInstance = null;
 function drawChart(gpus) {
   const ctx = document.getElementById('perfChart').getContext('2d');
@@ -82,7 +92,6 @@ function clearChart() {
   chartInstance = null;
 }
 
-// Parse chat commands
 function handleUserInput(input) {
   input = input.trim().toLowerCase();
   if (!input) return;
@@ -200,12 +209,10 @@ function handleUserInput(input) {
     return;
   }
 
-  // Fallback
   addMessage("bot", "Unknown command. Type <b>help</b> for available commands.");
   clearChart();
 }
 
-// User input event
 userInput.addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     let val = userInput.value;
@@ -215,7 +222,6 @@ userInput.addEventListener("keydown", function (e) {
   }
 });
 
-// Filter buttons
 function promptFilter(type) {
   let min = prompt(`Minimum ${type}?`);
   let max = prompt(`Maximum ${type}?`);
@@ -246,7 +252,6 @@ document.getElementById("filterPrice").onclick = () => promptFilter("Price");
 document.getElementById("filterTDP").onclick = () => promptFilter("TDP");
 document.getElementById("filterPSU").onclick = () => promptFilter("PSU");
 
-// Price filter with Used/New
 function filterByPrice(min, max) {
   let condition = getSelectedCondition();
   let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
