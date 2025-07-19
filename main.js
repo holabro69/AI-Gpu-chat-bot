@@ -163,22 +163,26 @@ function handleUserInput(input) {
     return;
   }
 
-  // VS Comparison
-  match = input.match(/([a-zA-Z0-9 ]+)\s+vs\s+([a-zA-Z0-9 ]+)/i);
-  if (match) {
-    let gpu1 = match[1].trim(), gpu2 = match[2].trim();
-    let [a, specA] = Object.entries(gpuSpecs).find(([k]) => k.includes(gpu1) || k.replace(/\s/g, '').includes(gpu1.replace(/\s/g, ''))) || [];
-    let [b, specB] = Object.entries(gpuSpecs).find(([k]) => k.includes(gpu2) || k.replace(/\s/g, '').includes(gpu2.replace(/\s/g, ''))) || [];
-    if (specA && specB) {
-      addMessage("bot", `
-        <b>${a.toUpperCase()}</b> vs <b>${b.toUpperCase()}</b><br>
-        <b>${a}:</b> VRAM ${specA.vram}, TDP ${specA.tdp}, PSU ${specA.psu}, Price: ${specA.price2025_new || specA.msrp}, Perf: ${specA.perf}<br>
-        <b>${b}:</b> VRAM ${specB.vram}, TDP ${specB.tdp}, PSU ${specB.psu}, Price: ${specB.price2025_new || specB.msrp}, Perf: ${specB.perf}<br>
-      `);
-      drawChart([
-        { name: a, ...specA },
-        { name: b, ...specB }
-      ]);
+  // VS Comparison (multi-GPU support)
+  if (input.includes('vs')) {
+    // Split by 'vs', trim, and filter non-empty
+    const terms = input.split('vs').map(t => t.trim()).filter(Boolean);
+    const foundGpus = [];
+    for (const term of terms) {
+      let found = Object.entries(gpuSpecs).find(([key]) =>
+        key.toLowerCase().includes(term) || key.replace(/\s/g, '').toLowerCase().includes(term.replace(/\s/g, ''))
+      );
+      if (found) {
+        foundGpus.push({ name: found[0], ...found[1] });
+      }
+    }
+    if (foundGpus.length >= 2) {
+      // Build result summary
+      let summary = foundGpus.map(gpu =>
+        `<b>${gpu.name.toUpperCase()}</b>: VRAM ${gpu.vram}, TDP ${gpu.tdp}, PSU ${gpu.psu}, Price: ${gpu.price2025_new || gpu.msrp}, Perf: ${gpu.perf}`
+      ).join('<br>');
+      addMessage("bot", summary);
+      drawChart(foundGpus);
     } else {
       addMessage("bot", "Comparison failed! (Check your input)");
       clearChart();
@@ -192,7 +196,7 @@ function handleUserInput(input) {
       <b>GPU Bot Help</b><br>
       <ul>
         <li><b>spec 4090</b> - Show spec for a GPU + chart</li>
-        <li><b>3070 vs 4060</b> - Compare two GPUs with chart</li>
+        <li><b>3070 vs 4060</b> - Compare multiple GPUs with chart</li>
         <li><b>price 100 400</b> - List GPUs in $100-400 (uses condition selector)</li>
         <li><b>price 100 400 used</b> - List used GPUs in that range</li>
         <li><b>tdp 150 250</b> - List GPUs with TDP 150-250W</li>
