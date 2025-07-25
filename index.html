@@ -8,6 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- CYBERPUNK PARTICLES BACKGROUND -->
+  <div id="vanta-bg"></div>
   <div class="container">
     <div class="rgb-control-group">
       <label>RGB Mode:
@@ -57,53 +59,75 @@
   <script src="gpu-data.js"></script>
   <script src="main.js"></script>
 
-  <!-- === CYBERPUNK PARTICLES BACKGROUND === -->
+  <!-- === CYBERPUNK PARTICLES (FULL PAGE) === -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
   <script>
-  VANTA.NET({
-    el: "body",
-    mouseControls: true,
-    touchControls: true,
-    minHeight: 200.00,
-    minWidth: 200.00,
-    scale: 1.0,
-    scaleMobile: 1.0,
-    color: 0x00fff7,
-    backgroundColor: 0x0a0a0a,
-    points: 16.0,
-    maxDistance: 20.0,
-    spacing: 18.0
-  });
+    // Make sure particles are always full screen and behind everything!
+    document.body.style.position = "relative";
+    const vantaBg = document.getElementById('vanta-bg');
+    Object.assign(vantaBg.style, {
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      width: '100vw',
+      height: '100vh',
+      zIndex: -2,
+      pointerEvents: 'none'
+    });
+    VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0x00fff7,
+      backgroundColor: 0x0a0a0a,
+      points: 16.0,
+      maxDistance: 20.0,
+      spacing: 18.0
+    });
   </script>
   <!-- === END CYBERPUNK PARTICLES === -->
 
+  <!-- === LIVE RGB CONTROLS === -->
   <script>
-  // === RGB Controls Logic ===
-  const rgbMode = document.getElementById('rgbMode');
-  const rgbColor = document.getElementById('rgbColor');
-  const rgbStrip = document.querySelector('.rgb-strip');
-  const container = document.querySelector('.container');
+    const rgbMode = document.getElementById('rgbMode');
+    const rgbColor = document.getElementById('rgbColor');
+    const rgbStrip = document.querySelector('.rgb-strip');
+    const container = document.querySelector('.container');
 
-  function updateRGBStyle() {
-    let color = rgbColor.value;
-    let mode = rgbMode.value;
-    if (mode === 'static') {
-      container.style.setProperty('--rgb-gradient', color);
-      rgbStrip.style.background = color;
-      container.style.setProperty('--rgb-animation', 'none');
-      rgbStrip.style.animation = 'none';
-    } else {
-      let gradient = `linear-gradient(270deg, ${color}, #ff00ea, #005eff, ${color})`;
-      container.style.setProperty('--rgb-gradient', gradient);
-      rgbStrip.style.background = gradient;
-      container.style.setProperty('--rgb-animation', 'rgb-border 8s linear infinite');
-      rgbStrip.style.animation = 'rgb-border 8s linear infinite';
+    function updateRGBStyle() {
+      let color = rgbColor.value;
+      let mode = rgbMode.value;
+
+      if (mode === 'static') {
+        container.style.setProperty('--rgb-gradient', color);
+        rgbStrip.style.background = color;
+        container.style.setProperty('--rgb-animation', 'none');
+        rgbStrip.style.animation = 'none';
+      } else if (mode === 'running') {
+        // Single-color bar moves across (LED style)
+        let gradient = `linear-gradient(90deg, transparent 0%, ${color} 40%, ${color} 60%, transparent 100%)`;
+        container.style.setProperty('--rgb-gradient', gradient);
+        rgbStrip.style.background = gradient;
+        container.style.setProperty('--rgb-animation', 'running-bar 1.6s linear infinite');
+        rgbStrip.style.animation = 'running-bar 1.6s linear infinite';
+      } else {
+        // Wave: animated multi-color
+        let gradient = `linear-gradient(270deg, ${color}, #ff00ea, #005eff, ${color})`;
+        container.style.setProperty('--rgb-gradient', gradient);
+        rgbStrip.style.background = gradient;
+        container.style.setProperty('--rgb-animation', 'rgb-border 8s linear infinite');
+        rgbStrip.style.animation = 'rgb-border 8s linear infinite';
+      }
     }
-  }
-  rgbMode.addEventListener('change', updateRGBStyle);
-  rgbColor.addEventListener('input', updateRGBStyle);
-  window.addEventListener('DOMContentLoaded', updateRGBStyle);
+    rgbMode.addEventListener('change', updateRGBStyle);
+    rgbColor.addEventListener('input', updateRGBStyle);
+    window.addEventListener('DOMContentLoaded', updateRGBStyle);
   </script>
+  <!-- === END LIVE RGB CONTROLS === -->
 </body>
 </html>
