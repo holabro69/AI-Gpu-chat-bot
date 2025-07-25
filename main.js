@@ -1,4 +1,4 @@
-// ==== BEGIN main.js ====
+// ==== BEGIN main.js CYBERPUNK EDITION ====
 
 // ==== Theme Switcher ====
 const themeBtn = document.getElementById("toggleMode");
@@ -19,7 +19,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Handles chatbox & commands (rest is your original code)
+// ==== Chat & Commands ====
 const chatbox = document.getElementById("chatbox");
 const userInput = document.getElementById("userInput");
 
@@ -29,30 +29,46 @@ function getSelectedCondition() {
 
 function addMessage(sender, text) {
   const msgDiv = document.createElement("div");
-  msgDiv.className = "msg " + sender;
+  msgDiv.className = "msg " + sender + (sender === "bot" ? " pulse" : "");
   msgDiv.innerHTML = text;
   chatbox.appendChild(msgDiv);
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
+// Bot typing animated glow
+function showBotTyping(callback) {
+  const typingDiv = document.createElement("div");
+  typingDiv.className = "msg bot pulse";
+  typingDiv.innerHTML = `<span style="letter-spacing:0.15em;">...</span>`;
+  chatbox.appendChild(typingDiv);
+  chatbox.scrollTop = chatbox.scrollHeight;
+  setTimeout(() => {
+    typingDiv.remove();
+    if (callback) callback();
+  }, 650 + Math.random() * 500);
+}
+
 function showResultsInChat(results, compareType) {
   if (results.length === 0) {
-    addMessage("bot", "No GPUs found for your filter!");
-    clearChart();
+    showBotTyping(() => {
+      addMessage("bot", "No GPUs found for your filter!");
+      clearChart();
+    });
     return;
   }
   let html = "<b>Matching GPUs:</b><ul style='margin-top:4px'>";
   results.forEach(gpu => {
-    html += `<li><b>${gpu.name.toUpperCase()}</b>: VRAM ${gpu.vram}, TDP ${gpu.tdp}, PSU ${gpu.psu}, Perf: ${gpu.perf}, Price: <span style="color:#18a058">${gpu.price || gpu.msrp}</span></li>`;
+    html += `<li><b>${gpu.name.toUpperCase()}</b>: VRAM ${gpu.vram}, TDP ${gpu.tdp}, PSU ${gpu.psu}, Perf: ${gpu.perf}, Price: <span style=\"color:#18a058\">${gpu.price || gpu.msrp}</span></li>`;
   });
   html += "</ul>";
-  addMessage("bot", html);
-
-  if (results.length >= 2 || compareType === 'force') {
-    drawChart(results);
-  } else {
-    clearChart();
-  }
+  showBotTyping(() => {
+    addMessage("bot", html);
+    if (results.length >= 2 || compareType === 'force') {
+      drawChart(results);
+    } else {
+      clearChart();
+    }
+  });
 }
 
 let chartInstance = null;
@@ -70,9 +86,9 @@ function drawChart(gpus) {
     data: {
       labels: labels,
       datasets: [
-        { label: 'Gaming', data: gaming, backgroundColor: '#007bff99' },
-        { label: 'Editing', data: editing, backgroundColor: '#28a74599' },
-        { label: 'AI', data: ai, backgroundColor: '#ff980099' }
+        { label: 'Gaming', data: gaming, backgroundColor: '#00e5ff99' },
+        { label: 'Editing', data: editing, backgroundColor: '#36ff9e99' },
+        { label: 'AI', data: ai, backgroundColor: '#bc38ff99' }
       ]
     },
     options: {
@@ -149,23 +165,26 @@ function handleUserInput(input) {
     if (!found) found = Object.entries(gpuSpecs).find(([key]) => key.includes(term));
     if (found) {
       let [key, spec] = found;
-      addMessage("bot", `
-        <b>${key.toUpperCase()}</b><br>
-        VRAM: ${spec.vram}, Arch: ${spec.arch}, Perf: ${spec.perf}, Released: ${spec.release}<br>
-        TDP: ${spec.tdp}, PSU: ${spec.psu}, Price (New): ${spec.price2025_new || spec.msrp}, Price (Used): ${spec.price2025_used || "-"}<br>
-        Gaming: ${spec.performance?.gaming || '-'}, Editing: ${spec.performance?.editing || '-'}, AI: ${spec.performance?.ai || '-'}
-      `);
-      drawChart([{ name: key, ...spec }]);
+      showBotTyping(() => {
+        addMessage("bot", `
+          <b>${key.toUpperCase()}</b><br>
+          VRAM: ${spec.vram}, Arch: ${spec.arch}, Perf: ${spec.perf}, Released: ${spec.release}<br>
+          TDP: ${spec.tdp}, PSU: ${spec.psu}, Price (New): ${spec.price2025_new || spec.msrp}, Price (Used): ${spec.price2025_used || "-"}<br>
+          Gaming: ${spec.performance?.gaming || '-'}, Editing: ${spec.performance?.editing || '-'}, AI: ${spec.performance?.ai || '-'}
+        `);
+        drawChart([{ name: key, ...spec }]);
+      });
     } else {
-      addMessage("bot", "GPU not found!");
-      clearChart();
+      showBotTyping(() => {
+        addMessage("bot", "GPU not found!");
+        clearChart();
+      });
     }
     return;
   }
 
   // VS Comparison (multi-GPU support)
   if (input.includes('vs')) {
-    // Split by 'vs', trim, and filter non-empty
     const terms = input.split('vs').map(t => t.trim()).filter(Boolean);
     const foundGpus = [];
     for (const term of terms) {
@@ -177,44 +196,53 @@ function handleUserInput(input) {
       }
     }
     if (foundGpus.length >= 2) {
-      // Build result summary
       let summary = foundGpus.map(gpu =>
         `<b>${gpu.name.toUpperCase()}</b>: VRAM ${gpu.vram}, TDP ${gpu.tdp}, PSU ${gpu.psu}, Price: ${gpu.price2025_new || gpu.msrp}, Perf: ${gpu.perf}`
       ).join('<br>');
-      addMessage("bot", summary);
-      drawChart(foundGpus);
+      showBotTyping(() => {
+        addMessage("bot", summary);
+        drawChart(foundGpus);
+      });
     } else {
-      addMessage("bot", "Comparison failed! (Check your input)");
-      clearChart();
+      showBotTyping(() => {
+        addMessage("bot", "Comparison failed! (Check your input)");
+        clearChart();
+      });
     }
     return;
   }
 
   // Help & Credit/About
   if (["help"].includes(input)) {
-    addMessage("bot", `
-      <b>GPU Bot Help</b><br>
-      <ul>
-        <li><b>spec 4090</b> - Show spec for a GPU + chart</li>
-        <li><b>3070 vs 4060</b> - Compare multiple GPUs with chart</li>
-        <li><b>price 100 400</b> - List GPUs in $100-400 (uses condition selector)</li>
-        <li><b>price 100 400 used</b> - List used GPUs in that range</li>
-        <li><b>tdp 150 250</b> - List GPUs with TDP 150-250W</li>
-        <li><b>psu 300 600</b> - List GPUs with PSU 300-600W</li>
-        <li><b>help</b> - Show this help</li>
-      </ul>
-    `);
-    clearChart();
+    showBotTyping(() => {
+      addMessage("bot", `
+        <b>GPU Bot Help</b><br>
+        <ul>
+          <li><b>spec 4090</b> - Show spec for a GPU + chart</li>
+          <li><b>3070 vs 4060</b> - Compare multiple GPUs with chart</li>
+          <li><b>price 100 400</b> - List GPUs in $100-400 (uses condition selector)</li>
+          <li><b>price 100 400 used</b> - List used GPUs in that range</li>
+          <li><b>tdp 150 250</b> - List GPUs with TDP 150-250W</li>
+          <li><b>psu 300 600</b> - List GPUs with PSU 300-600W</li>
+          <li><b>help</b> - Show this help</li>
+        </ul>
+      `);
+      clearChart();
+    });
     return;
   }
   if (["credit", "credits", "about", "hello"].includes(input)) {
-    addMessage("bot", "👋 Hello, I was made by <b>Holabro</b> and powered by <b>ChatGPT</b>.");
-    clearChart();
+    showBotTyping(() => {
+      addMessage("bot", "👋 Hello, I was made by <b>Holabro</b> and powered by <b>ChatGPT</b>.");
+      clearChart();
+    });
     return;
   }
 
-  addMessage("bot", "Unknown command. Type <b>help</b> for available commands.");
-  clearChart();
+  showBotTyping(() => {
+    addMessage("bot", "Unknown command. Type <b>help</b> for available commands.");
+    clearChart();
+  });
 }
 
 userInput.addEventListener("keydown", function (e) {
@@ -271,4 +299,4 @@ function filterByPrice(min, max) {
   return results;
 }
 
-// ==== END main.js ====
+// ==== END main.js CYBERPUNK EDITION ====
