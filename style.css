@@ -190,3 +190,56 @@ h2 {
   animation: rgb-border 8s linear infinite;
   filter: blur(1.5px);
 }
+/* ... your existing styles ... */
+
+.rgb-control-group {
+  display: flex;
+  gap: 1.3em;
+  align-items: center;
+  margin-bottom: 1.1em;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  padding: 0.7em 1em;
+  box-shadow: 0 0 10px #0ff3;
+  color: #0ff;
+  font-family: inherit;
+}
+
+.rgb-control-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 1.01em;
+}
+
+.rgb-control-group select,
+.rgb-control-group input[type="color"] {
+  padding: 0.2em 0.5em;
+  border-radius: 8px;
+  border: none;
+  background: #23282e;
+  color: #0ff;
+  font-family: inherit;
+  font-size: 1em;
+}
+
+.container {
+  /* your container styles */
+}
+
+.container::before {
+  /* your container::before styles */
+}
+
+.rgb-strip {
+  /* your rgb-strip styles */
+}
+
+@keyframes rgb-border {
+  /* ... */
+}
+
+@keyframes running-bar {
+  /* ... */
+}
+
