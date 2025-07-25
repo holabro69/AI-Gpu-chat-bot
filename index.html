@@ -9,6 +9,18 @@
 </head>
 <body>
   <div class="container">
+    <div class="rgb-control-group">
+      <label>RGB Mode:
+        <select id="rgbMode">
+          <option value="wave">Wave</option>
+          <option value="running">Running</option>
+          <option value="static">Static</option>
+        </select>
+      </label>
+      <label>Pick Color:
+        <input type="color" id="rgbColor" value="#00fff7">
+      </label>
+    </div>
     <div class="rgb-strip"></div>
     <h2>GPU Data Chat Bot 💬</h2>
     <div id="chatbox"></div>
@@ -63,6 +75,35 @@
     maxDistance: 20.0,
     spacing: 18.0
   });
+  </script>
+  <!-- === END CYBERPUNK PARTICLES === -->
+
+  <script>
+  // === RGB Controls Logic ===
+  const rgbMode = document.getElementById('rgbMode');
+  const rgbColor = document.getElementById('rgbColor');
+  const rgbStrip = document.querySelector('.rgb-strip');
+  const container = document.querySelector('.container');
+
+  function updateRGBStyle() {
+    let color = rgbColor.value;
+    let mode = rgbMode.value;
+    if (mode === 'static') {
+      container.style.setProperty('--rgb-gradient', color);
+      rgbStrip.style.background = color;
+      container.style.setProperty('--rgb-animation', 'none');
+      rgbStrip.style.animation = 'none';
+    } else {
+      let gradient = `linear-gradient(270deg, ${color}, #ff00ea, #005eff, ${color})`;
+      container.style.setProperty('--rgb-gradient', gradient);
+      rgbStrip.style.background = gradient;
+      container.style.setProperty('--rgb-animation', 'rgb-border 8s linear infinite');
+      rgbStrip.style.animation = 'rgb-border 8s linear infinite';
+    }
+  }
+  rgbMode.addEventListener('change', updateRGBStyle);
+  rgbColor.addEventListener('input', updateRGBStyle);
+  window.addEventListener('DOMContentLoaded', updateRGBStyle);
   </script>
 </body>
 </html>
