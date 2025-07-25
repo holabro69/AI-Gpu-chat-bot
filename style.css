@@ -142,3 +142,11 @@ h2 {
 .pulse {
   animation: pulseGlow 2s infinite alternate;
 }
+#perfChart {
+  border: 2px solid #0ff;
+  box-shadow: 0 0 18px #0ff;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.32);
+  margin-bottom: 18px;
+  margin-top: 12px;
+}
