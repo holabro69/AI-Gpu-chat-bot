@@ -1,24 +1,5 @@
 // ==== BEGIN main.js CYBERPUNK EDITION ====
 
-// ==== Theme Switcher ====
-const themeBtn = document.getElementById("toggleMode");
-themeBtn.onclick = function () {
-  document.body.classList.toggle("light");
-  if (document.body.classList.contains("light")) {
-    localStorage.setItem("theme", "light");
-  } else {
-    localStorage.setItem("theme", "dark");
-  }
-};
-window.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem("theme");
-  if (saved === "light") {
-    document.body.classList.add("light");
-  } else {
-    document.body.classList.remove("light");
-  }
-});
-
 // ==== Chat & Commands ====
 const chatbox = document.getElementById("chatbox");
 const userInput = document.getElementById("userInput");
