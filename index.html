@@ -35,130 +35,122 @@
       overflow: hidden;
       z-index: 1;
     }
-    .gpu-rgb-fake {
-      width: 400px;
+    .rgb-control-group {
+      display: flex;
+      gap: 1.3em;
+      align-items: center;
+      margin-bottom: 1.1em;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      padding: 0.7em 1em;
+      box-shadow: 0 0 10px #0ff3;
+      color: #0ff;
+      font-family: inherit;
+      justify-content: center;
+    }
+    .rgb-control-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-size: 1.01em;
+    }
+    .rgb-control-group select,
+    .rgb-control-group input[type="color"] {
+      padding: 0.2em 0.5em;
+      border-radius: 8px;
+      border: none;
+      background: #23282e;
+      color: #0ff;
+      font-family: inherit;
+      font-size: 1em;
+    }
+    .gpu-real-wrapper {
+      width: 410px;
       margin: 34px auto 8px auto;
       display: flex;
       justify-content: center;
-      perspective: 120px;
-      filter: drop-shadow(0 0 30px #00ffeebb);
-      z-index: 3;
-    }
-    .gpu-body {
-      background: linear-gradient(120deg, #161a21 65%, #232c33 100%);
-      border-radius: 20px 20px 34px 34px;
-      box-shadow: 0 0 24px #0ff7, 0 0 100px #18d8e0b6, 0 0 90px #38aaff20 inset;
-      width: 350px;
-      height: 75px;
       position: relative;
-      overflow: visible;
+      z-index: 2;
+    }
+    .gpu-image-container {
+      position: relative;
+      width: 400px;
+      height: 170px;
       display: flex;
-      align-items: flex-start;
-      flex-direction: column;
-      border: 3.5px solid #3dfffd80;
+      align-items: center;
+      justify-content: center;
+      animation: spin3d 8s linear infinite;
+      transform-style: preserve-3d;
+      will-change: transform;
     }
-    .gpu-rgb-bar {
-      width: 96%;
-      height: 13px;
-      margin: 10px auto 0 auto;
-      border-radius: 11px 11px 18px 18px;
-      background: linear-gradient(270deg,#00fff7,#ff00ea,#005eff,#00ff99,#ffeb3b,#00fff7,#ff2222,#00fff7);
-      background-size: 800% 800%;
-      animation: rgb-run-gpu 1.45s linear infinite;
-      box-shadow: 0 0 28px #00fff9cc, 0 0 65px #0ff2;
-      position: relative;
-      z-index: 3;
-      filter: brightness(1.22) blur(0.2px) drop-shadow(0 0 12px #4afcff);
+    @keyframes spin3d {
+      0%   { transform: rotateY(-18deg) rotateX(7deg);}
+      80%  { transform: rotateY(342deg) rotateX(7deg);}
+      100% { transform: rotateY(342deg) rotateX(7deg);}
     }
-    @keyframes rgb-run-gpu {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
-    }
-    .gpu-brand {
-      position: absolute;
-      left: 26px;
-      top: 20px;
-      font-family: 'Orbitron', 'Arial', sans-serif;
-      font-size: 1.05em;
-      letter-spacing: 0.12em;
-      color: #0ff;
-      opacity: 0.96;
-      text-shadow: 0 0 18px #fff, 0 0 12px #0ff, 0 0 18px #0ff;
-      z-index: 2;
-      font-weight: bold;
-      text-transform: uppercase;
-      line-height: 1.08;
-    }
-    .gpu-model {
-      margin-top: 4px;
-      text-align: left;
-    }
-    .gpu-model .aorus {
+    .gpu-real-img {
+      width: 100%;
+      height: auto;
       display: block;
-      font-size: 1.16em;
-      font-weight: bold;
-      color: #ff9100;
-      letter-spacing: 0.08em;
-      text-shadow: 0 0 10px #ffa040cc, 0 0 6px #ffb30099;
-    }
-    .gpu-model .model-details {
-      display: block;
-      font-size: 0.98em;
-      font-weight: bold;
-      color: #cfd8dc;
-      letter-spacing: 0.07em;
-      text-shadow: 0 0 4px #00fff7;
-      margin-top: 0.5px;
-    }
-    .gpu-fan {
-      width: 38px;
-      height: 38px;
-      background: radial-gradient(circle at 50% 50%, #26292e 60%, #222 100%);
-      border-radius: 50%;
-      position: absolute;
-      top: 27px;
-      border: 3px solid #0ff3;
-      box-shadow: 0 0 10px #07ffff2a;
-      animation: fan-spin 0.85s linear infinite;
+      filter: drop-shadow(0 0 32px #00fff788) drop-shadow(0 0 8px #fff2);
+      border-radius: 16px;
       z-index: 1;
-      filter: blur(0.2px);
-      overflow: hidden;
-    }
-    .gpu-fan1 { left: 85px; }
-    .gpu-fan2 { left: 158px; animation-delay: 0.35s; }
-    .gpu-fan3 { left: 230px; animation-delay: 0.6s; }
-    @keyframes fan-spin {
-      100% { transform: rotate(360deg);}
-    }
-    .gpu-fan-blades {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      left: 0; top: 0;
       pointer-events: none;
+      user-select: none;
     }
-    .gpu-fan-blades::before {
-      content: '';
-      display: block;
-      width: 100%;
-      height: 100%;
-      background: repeating-conic-gradient(from 0deg, #0ff 0 7deg, transparent 7deg 17deg);
-      border-radius: 50%;
-      opacity: 0.12;
-      filter: blur(1px);
-    }
-    .gpu-body::after {
-      content: '';
+    .gpu-rgb-overlay {
       position: absolute;
-      bottom: -19px;
-      left: 8%;
-      width: 84%;
-      height: 13px;
-      border-radius: 20px;
-      background: radial-gradient(circle, #1ff 30%, transparent 90%);
-      opacity: 0.19;
-      filter: blur(6px);
-      z-index: 2;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      border-radius: 16px;
+      pointer-events: none;
+      opacity: 0.18;
+      mix-blend-mode: lighten;
+      animation: gpu-rgb-real 4s linear infinite;
+      background: var(--rgb-gradient, linear-gradient(90deg,#00fff7,#ff00ea,#005eff,#00ff99,#ffeb3b,#00fff7));
+    }
+    @keyframes gpu-rgb-real {
+      0% { filter: hue-rotate(0deg);}
+      100% { filter: hue-rotate(360deg);}
+    }
+    .gpu-img-label {
+      position: absolute;
+      bottom: 16px;
+      left: 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      z-index: 3;
+      pointer-events: none;
+      user-select: none;
+    }
+    .gpu-label-brand {
+      font-size: 1em;
+      color: #00fff7;
+      font-family: 'Orbitron', Arial, sans-serif;
+      letter-spacing: 0.09em;
+      text-shadow: 0 0 8px #00fff7, 0 0 16px #000c;
+      font-weight: bold;
+      opacity: 0.92;
+    }
+    .gpu-label-aorus {
+      font-size: 1.33em;
+      color: #ff9100;
+      font-family: 'Orbitron', Arial, sans-serif;
+      letter-spacing: 0.10em;
+      font-weight: bold;
+      text-shadow: 0 0 12px #ffa040cc, 0 0 12px #fff;
+      line-height: 1;
+      margin-top: -1px;
+    }
+    .gpu-label-model {
+      font-size: 1.06em;
+      color: #e2ecfd;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 8px #00fff7, 0 0 8px #fff3;
+      margin-top: -2px;
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: 600;
     }
     h2 {
       text-align: center;
@@ -207,6 +199,18 @@
     @keyframes pulseGlow {
       0% { box-shadow: 0 0 10px #0ff; }
       100% { box-shadow: 0 0 20px #0ff, 0 0 40px #0ff; }
+    }
+    #perfChart {
+      border: 2px solid #0ff;
+      box-shadow: 0 0 18px #0ff;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.32);
+      margin-bottom: 18px;
+      margin-top: 12px;
+      width: 100%;
+      max-width: 510px;
+      min-height: 260px;
+      display: block;
     }
     .input-group {
       display: flex;
@@ -275,24 +279,34 @@
 </head>
 <body>
   <div id="vanta-bg"></div>
-  <!-- Fake GPU RGB Model (AORUS RTX 5060 Ti, cyberpunk style) -->
-  <div class="gpu-rgb-fake">
-    <div class="gpu-body">
-      <div class="gpu-rgb-bar"></div>
-      <div class="gpu-brand">
-        GIGABYTE
-        <div class="gpu-model">
-          <span class="aorus">AORUS</span>
-          <span class="model-details">RTX 5060 Ti</span>
-        </div>
+  <!-- RGB Color Controls -->
+  <div class="rgb-control-group">
+    <label>RGB Mode:
+      <select id="rgbMode">
+        <option value="wave">Wave</option>
+        <option value="running">Running</option>
+        <option value="static">Static</option>
+      </select>
+    </label>
+    <label>Pick Color:
+      <input type="color" id="rgbColor" value="#00fff7">
+    </label>
+  </div>
+  <!-- Real spinning GPU bar -->
+  <div class="gpu-real-wrapper">
+    <div class="gpu-image-container">
+      <img src="aorus-5060ti.png" alt="GIGABYTE AORUS RTX 5060 Ti" class="gpu-real-img">
+      <div class="gpu-rgb-overlay"></div>
+      <div class="gpu-img-label">
+        <span class="gpu-label-brand">GIGABYTE</span>
+        <span class="gpu-label-aorus">AORUS</span>
+        <span class="gpu-label-model">RTX 5060 Ti</span>
       </div>
-      <div class="gpu-fan gpu-fan1"><div class="gpu-fan-blades"></div></div>
-      <div class="gpu-fan gpu-fan2"><div class="gpu-fan-blades"></div></div>
-      <div class="gpu-fan gpu-fan3"><div class="gpu-fan-blades"></div></div>
     </div>
   </div>
   <div class="container">
     <h2>GPU Data Chat Bot 💬</h2>
+    <canvas id="perfChart"></canvas>
     <div id="chatbox"></div>
     <div class="input-group">
       <input type="text" id="userInput" autocomplete="off" placeholder="Try: 'spec rtx 4090', '4070 super vs 7900 xt', 'price 400 700 used', 'help'">
@@ -320,6 +334,37 @@
       🏗️ Built by <strong>Holabro</strong> | 🤖 Powered by <strong>ChatGPT</strong>
     </div>
   </div>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // ==== RGB Controls for overlay ====
+    const rgbMode = document.getElementById('rgbMode');
+    const rgbColor = document.getElementById('rgbColor');
+    const rgbOverlay = document.querySelector('.gpu-rgb-overlay');
+
+    function updateRGBStyle() {
+      let color = rgbColor.value;
+      let mode = rgbMode.value;
+      if (mode === 'static') {
+        document.body.style.setProperty('--rgb-gradient', color);
+        rgbOverlay.style.background = color;
+        rgbOverlay.style.animation = 'none';
+      } else if (mode === 'running') {
+        let gradient = `linear-gradient(90deg, transparent 0%, ${color} 40%, ${color} 60%, transparent 100%)`;
+        document.body.style.setProperty('--rgb-gradient', gradient);
+        rgbOverlay.style.background = gradient;
+        rgbOverlay.style.animation = 'gpu-rgb-real 1.4s linear infinite';
+      } else {
+        let gradient = `linear-gradient(90deg, ${color}, #ff00ea, #005eff, ${color})`;
+        document.body.style.setProperty('--rgb-gradient', gradient);
+        rgbOverlay.style.background = gradient;
+        rgbOverlay.style.animation = 'gpu-rgb-real 4s linear infinite';
+      }
+    }
+    rgbMode.addEventListener('change', updateRGBStyle);
+    rgbColor.addEventListener('input', updateRGBStyle);
+    window.addEventListener('DOMContentLoaded', updateRGBStyle);
+  </script>
   <script>
     // GPU Data (add more as you wish)
     const gpuSpecs = {
@@ -343,11 +388,10 @@
         vram: "16GB", arch: "Ada Lovelace Refresh", perf: "High-end+", release: 2025, tdp: "220W", msrp: "$699",
         price2025_new: "$669", price2025_used: "$579", psu: "650W", performance: { gaming: 136, editing: 120, ai: 115 }
       }
-      // Add more GPUs if you want!
     };
   </script>
   <script>
-    // Theme Switcher
+    // ==== THEME SWITCHER ====
     const themeBtn = document.getElementById("toggleMode");
     themeBtn.onclick = function () {
       document.body.classList.toggle("light");
@@ -366,9 +410,10 @@
       }
     });
 
-    // Chat & Commands
+    // ==== CHATBOT & COMMANDS ====
     const chatbox = document.getElementById("chatbox");
     const userInput = document.getElementById("userInput");
+    let chartInstance = null;
 
     function getSelectedCondition() {
       return document.querySelector('input[name="condition"]:checked').value;
@@ -382,7 +427,6 @@
       chatbox.scrollTop = chatbox.scrollHeight;
     }
 
-    // Bot typing animated glow
     function showBotTyping(callback) {
       const typingDiv = document.createElement("div");
       typingDiv.className = "msg bot pulse";
@@ -395,10 +439,48 @@
       }, 650 + Math.random() * 500);
     }
 
-    function showResultsInChat(results) {
+    function drawChart(gpus) {
+      const ctx = document.getElementById('perfChart').getContext('2d');
+      const labels = gpus.map(g => g.name.toUpperCase());
+      const gaming = gpus.map(g => g.performance?.gaming || 0);
+      const editing = gpus.map(g => g.performance?.editing || 0);
+      const ai = gpus.map(g => g.performance?.ai || 0);
+
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Gaming', data: gaming, backgroundColor: '#00e5ff99' },
+            { label: 'Editing', data: editing, backgroundColor: '#36ff9e99' },
+            { label: 'AI', data: ai, backgroundColor: '#bc38ff99' }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            title: { display: true, text: 'GPU Performance Score (higher is better)' }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+    function clearChart() {
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = null;
+      document.getElementById('perfChart').getContext('2d').clearRect(0,0,510,260);
+    }
+
+    function showResultsInChat(results, compareType) {
       if (results.length === 0) {
         showBotTyping(() => {
           addMessage("bot", "No GPUs found for your filter!");
+          clearChart();
         });
         return;
       }
@@ -409,6 +491,11 @@
       html += "</ul>";
       showBotTyping(() => {
         addMessage("bot", html);
+        if (results.length >= 2 || compareType === 'force') {
+          drawChart(results);
+        } else {
+          clearChart();
+        }
       });
     }
 
@@ -463,6 +550,7 @@
         }
         showBotTyping(() => {
           addMessage("bot", resp);
+          drawChart(topList);
         });
         return;
       }
@@ -501,10 +589,12 @@
               TDP: ${spec.tdp}, PSU: ${spec.psu}, Price (New): ${spec.price2025_new || spec.msrp}, Price (Used): ${spec.price2025_used || "-"}<br>
               Gaming: ${spec.performance?.gaming || '-'}, Editing: ${spec.performance?.editing || '-'}, AI: ${spec.performance?.ai || '-'}
             `);
+            drawChart([{ name: key, ...spec }]);
           });
         } else {
           showBotTyping(() => {
             addMessage("bot", "GPU not found!");
+            clearChart();
           });
         }
         return;
@@ -528,10 +618,12 @@
           ).join('<br>');
           showBotTyping(() => {
             addMessage("bot", summary);
+            drawChart(foundGpus);
           });
         } else {
           showBotTyping(() => {
             addMessage("bot", "Comparison failed! (Check your input)");
+            clearChart();
           });
         }
         return;
@@ -549,6 +641,7 @@
               <li><b>help</b> - Show this help</li>
             </ul>
           `);
+          clearChart();
         });
         return;
       }
@@ -557,6 +650,7 @@
       if (["test", "testing", "cek"].includes(input)) {
         showBotTyping(() => {
           addMessage("bot", "Test success ✅ — how can I help you today?");
+          clearChart();
         });
         return;
       }
@@ -565,6 +659,7 @@
       if (["hello", "hallo", "hi", "hey"].includes(input)) {
         showBotTyping(() => {
           addMessage("bot", "hello i was gpu chat bot, how can i help you today? say <b>help</b> if you confused 🙂");
+          clearChart();
         });
         return;
       }
@@ -573,6 +668,7 @@
       if (["credit", "credits", "about"].includes(input)) {
         showBotTyping(() => {
           addMessage("bot", "👋 Hello, I was made by <b>Holabro</b> and powered by <b>ChatGPT</b>.");
+          clearChart();
         });
         return;
       }
@@ -580,6 +676,7 @@
       // Unknown
       showBotTyping(() => {
         addMessage("bot", "Unknown command. Type <b>help</b> for available commands.");
+        clearChart();
       });
     }
 
