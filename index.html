@@ -15,14 +15,6 @@
       transition: background 0.22s, color 0.22s;
     }
 
-    #vanta-bg {
-      position: fixed;
-      left: 0; top: 0;
-      width: 100vw; height: 100vh;
-      z-index: -2;
-      pointer-events: none;
-    }
-
     .container {
       max-width: 600px;
       margin: 32px auto;
@@ -155,7 +147,6 @@
       filter: blur(1px);
     }
 
-    /* Extra Cyberpunk Glow */
     .gpu-body::after {
       content: '';
       position: absolute;
@@ -180,28 +171,114 @@
       text-shadow: 0 0 12px #0ff, 0 0 22px #0ff, 0 0 30px #fff;
     }
 
-    /* Chat placeholder styling - replace with your own bot! */
-    .chatbot-placeholder {
-      width: 100%;
-      min-height: 320px;
-      background: rgba(10,20,28,0.55);
-      border-radius: 14px;
-      margin: 40px auto 0 auto;
-      padding: 48px 20px 20px 20px;
-      color: #eee;
-      font-size: 1.15em;
-      text-align: center;
-      letter-spacing: 0.04em;
-      box-shadow: 0 0 30px #0ff2;
-      border: 1.5px solid #0ff3;
+    #chatbox {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5em;
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      background: transparent;
+      min-height: 280px;
+      margin-bottom: 10px;
     }
-    .chatbot-placeholder b {
-      color: #00fff7;
+    .msg {
+      max-width: 88%;
+      border-radius: 1em;
+      padding: 0.8em 1em;
+      font-size: 1.08em;
+      line-height: 1.5;
+      word-break: break-word;
+      box-shadow: 0 0 8px rgba(0,255,255,0.3);
+    }
+    .msg.user {
+      align-self: flex-end;
+      background: linear-gradient(120deg, #00e5ff 0%, #006eff 100%);
+      color: #fff;
+      text-shadow: 0 0 3px #fff;
+    }
+    .msg.bot {
+      align-self: flex-start;
+      background: rgba(0, 255, 255, 0.12);
+      color: #0ff;
+      border: 1px solid #0ff;
+    }
+    .pulse {
+      animation: pulseGlow 2s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 10px #0ff; }
+      100% { box-shadow: 0 0 20px #0ff, 0 0 40px #0ff; }
+    }
+
+    .input-group {
+      display: flex;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 1em;
+      padding: 1em;
+      gap: 0.8em;
+      box-shadow: 0 0 10px #0ff;
+      margin-bottom: 0.8em;
+    }
+    .input-group input {
+      flex: 1;
+      border-radius: 12px;
+      border: 1px solid #00ffee;
+      padding: 0.75em 1.15em;
+      background: #000;
+      color: #0ff;
+      font-size: 1.08em;
+      outline: none;
+    }
+    .input-group input::placeholder {
+      color: #0cc;
+      opacity: 1;
+    }
+    .btns {
+      display: flex;
+      gap: 0.8em;
+      justify-content: center;
+      padding: 1em 0;
+    }
+    .btns button {
+      background: transparent;
+      border: 1px solid #0ff;
+      color: #0ff;
+      padding: 0.68em 1.1em;
+      border-radius: 1em;
+      font-weight: 600;
+      font-size: 1em;
+      box-shadow: 0 0 10px #0ff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btns button:hover {
+      background: #0ff;
+      color: #000;
+      box-shadow: 0 0 20px #0ff;
+    }
+
+    .disclaimer {
+      font-size: 0.96em;
+      background: rgba(0, 255, 255, 0.1);
+      color: #ffe286;
+      border: 1px solid #0ff;
+      border-radius: 10px;
+      margin: 1em;
+      padding: 1em;
+      box-shadow: 0 0 10px #0ff;
+    }
+    #footer {
+      text-align: center;
+      color: #0ff;
+      font-size: 0.95em;
+      margin: 1em 0;
+      text-shadow: 0 0 8px #0ff;
     }
   </style>
 </head>
 <body>
-  <!-- Fake GPU RGB Model (animated, just for fun!) -->
+  <!-- Cyberpunk Fake GPU -->
   <div class="gpu-rgb-fake">
     <div class="gpu-body">
       <div class="gpu-rgb-bar"></div>
@@ -214,13 +291,323 @@
   </div>
   <div class="container">
     <h2>GPU Data Chat Bot 💬</h2>
-    <div class="chatbot-placeholder">
-      <b>This is your cyberpunk GPU visual!</b><br>
-      <br>
-      Place your chat bot code here.<br>
-      <br>
-      <span style="color:#ffe086; font-size:1em; opacity:0.7;">(The GPU above is 100% CSS, not an image!)</span>
+    <div id="chatbox"></div>
+    <div class="input-group">
+      <input type="text" id="userInput" autocomplete="off" placeholder="Try: 'spec rtx 4090', '4070 super vs 7900 xt', 'price 400 700 used', 'help'">
+    </div>
+    <div class="btns">
+      <button id="toggleMode">🌗 Theme</button>
+      <button id="filterPrice">💰 Price</button>
+      <button id="filterPSU">🔌 PSU</button>
+      <button id="filterTDP">🔥 TDP</button>
+    </div>
+    <div class="input-group" style="margin:10px 0 0 0;">
+      <label style="margin-right:10px;">
+        <input type="radio" name="condition" value="new" checked> New
+      </label>
+      <label>
+        <input type="radio" name="condition" value="used"> Used
+      </label>
+    </div>
+    <div class="disclaimer">
+      ⚠️ <b>Disclaimer:</b> This tool is for quick reference only.<br>
+      Do <b>not rely on this data for critical decisions</b>; info may be incomplete or inaccurate.<br>
+      <b>Always do more research</b> from trusted sources for the latest and most accurate GPU details.
+    </div>
+    <div id="footer">
+      🏗️ Built by <strong>Holabro</strong> | 🤖 Powered by <strong>ChatGPT</strong>
     </div>
   </div>
+
+  <script>
+    // GPU Data (only a few models for demo - add more as needed)
+    const gpuSpecs = {
+      "rtx 4090": {
+        vram: "24GB", arch: "Ada Lovelace", perf: "Insane", release: 2022, tdp: "450W", msrp: "$1599",
+        price2025_new: "$1575", price2025_used: "$1299", psu: "1000W", performance: { gaming: 164, editing: 138, ai: 162 }
+      },
+      "rtx 4070 super": {
+        vram: "12GB", arch: "Ada Lovelace", perf: "High-end", release: 2024, tdp: "220W", msrp: "$599",
+        price2025_new: "$565", price2025_used: "$443", psu: "650W", performance: { gaming: 124, editing: 110, ai: 110 }
+      },
+      "rx 7900 xt": {
+        vram: "20GB", arch: "RDNA 3", perf: "Ultra high-end+", release: 2022, tdp: "300W", msrp: "$899",
+        price2025_new: "$729", price2025_used: "$532", psu: "800W", performance: { gaming: 134, editing: 110, ai: 99 }
+      },
+      "rtx 3060": {
+        vram: "12GB", arch: "Ampere", perf: "Mid-range+", release: 2021, tdp: "170W", msrp: "$329",
+        price2025_new: "$235", price2025_used: "$171", psu: "550W", performance: { gaming: 83, editing: 75, ai: 63 }
+      }
+      // ...add more GPUs as you want!
+    };
+  </script>
+  <script>
+    // ==== Theme Switcher ====
+    const themeBtn = document.getElementById("toggleMode");
+    themeBtn.onclick = function () {
+      document.body.classList.toggle("light");
+      if (document.body.classList.contains("light")) {
+        localStorage.setItem("theme", "light");
+      } else {
+        localStorage.setItem("theme", "dark");
+      }
+    };
+    window.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("theme");
+      if (saved === "light") {
+        document.body.classList.add("light");
+      } else {
+        document.body.classList.remove("light");
+      }
+    });
+
+    // ==== Chat & Commands ====
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("userInput");
+
+    function getSelectedCondition() {
+      return document.querySelector('input[name="condition"]:checked').value;
+    }
+
+    function addMessage(sender, text) {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "msg " + sender + (sender === "bot" ? " pulse" : "");
+      msgDiv.innerHTML = text;
+      chatbox.appendChild(msgDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    // Bot typing animated glow
+    function showBotTyping(callback) {
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "msg bot pulse";
+      typingDiv.innerHTML = `<span style="letter-spacing:0.15em;">...</span>`;
+      chatbox.appendChild(typingDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+      setTimeout(() => {
+        typingDiv.remove();
+        if (callback) callback();
+      }, 650 + Math.random() * 500);
+    }
+
+    function showResultsInChat(results) {
+      if (results.length === 0) {
+        showBotTyping(() => {
+          addMessage("bot", "No GPUs found for your filter!");
+        });
+        return;
+      }
+      let html = "<b>Matching GPUs:</b><ul style='margin-top:4px'>";
+      results.forEach(gpu => {
+        html += `<li><b>${gpu.name.toUpperCase()}</b>: VRAM ${gpu.vram}, TDP ${gpu.tdp}, PSU ${gpu.psu}, Perf: ${gpu.perf}, Price: <span style=\"color:#18a058\">${gpu.price || gpu.msrp}</span></li>`;
+      });
+      html += "</ul>";
+      showBotTyping(() => {
+        addMessage("bot", html);
+      });
+    }
+
+    function handleUserInput(input) {
+      input = input.trim().toLowerCase();
+
+      // Best GPU for Budget & Use-case (simple version)
+      let bestGpuMatch = input.match(
+        /(find|best|recommend)[\s\w]*(gpu|graphics card|vga)?[\s\w]*(?:under|below|<=|less than)?\s*\$?(\d{2,5})?[\s\w]*(?:for)?\s*([\w\s,]*)?/i
+      );
+      if (bestGpuMatch) {
+        let budget = bestGpuMatch[3] ? parseInt(bestGpuMatch[3]) : null;
+        let usecaseText = (bestGpuMatch[4] || '').replace(/and|or|,|\s+/gi, ' ').trim();
+        let useCases = [];
+        if (/ai|ml|deep learning/i.test(usecaseText)) useCases.push('ai');
+        if (/edit|video|workstation|render/i.test(usecaseText)) useCases.push('editing');
+        if (/game/i.test(usecaseText)) useCases.push('gaming');
+        if (useCases.length === 0) useCases = ['gaming', 'editing', 'ai'];
+        if (!budget) budget = 400;
+
+        let condition = getSelectedCondition();
+        let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
+
+        let gpus = [];
+        for (const [key, spec] of Object.entries(gpuSpecs)) {
+          let price = spec[priceKey];
+          if (!price) continue;
+          let p = parseInt(price.replace('$', ''));
+          if (p > budget) continue;
+          let hasUseCase = useCases.some(type => typeof spec.performance?.[type] === "number");
+          if (!hasUseCase) continue;
+          gpus.push({ name: key, ...spec, price });
+        }
+        gpus.sort((a, b) => {
+          let aScore = useCases.reduce((s, type) => s + (a.performance[type] || 0), 0);
+          let bScore = useCases.reduce((s, type) => s + (b.performance[type] || 0), 0);
+          return bScore - aScore;
+        });
+
+        let topList = gpus.slice(0, 4);
+        let resp = "";
+
+        if (topList.length === 0) {
+          resp = `😔 Bro, nothing found under <b>$${budget}</b> for <b>${useCases.join(' / ')}</b> (${condition}). Try raising your budget or changing use case.`;
+        } else {
+          resp = `Yo dawg! 🔥 Here’s my top picks under <b>$${budget}</b> for <b>${useCases.join(' / ')}</b> (${condition}):<ul style="margin-top:4px">`;
+          topList.forEach(gpu => {
+            resp += `<li><b>${gpu.name.toUpperCase()}</b> — ${gpu.vram}, Perf: ${gpu.perf}, Released: ${gpu.release}, Price: <span style="color:#18a058">${gpu.price}</span><br>
+            <small>Gaming: ${gpu.performance?.gaming || "-"} | Editing: ${gpu.performance?.editing || "-"} | AI: ${gpu.performance?.ai || "-"}</small></li>`;
+          });
+          resp += "</ul><div style='margin-top:7px;'>Need to compare? Type <b>3070 vs 4060</b> or similar!</div>";
+        }
+        showBotTyping(() => {
+          addMessage("bot", resp);
+        });
+        return;
+      }
+
+      // Price filter
+      let match = input.match(/price\s+(\d+)\s+(\d+)(?:\s+(used|new))?/i);
+      if (match) {
+        let min = parseInt(match[1]), max = parseInt(match[2]);
+        let condition = match[3] || getSelectedCondition();
+        let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
+        let results = [];
+        for (const [key, spec] of Object.entries(gpuSpecs)) {
+          let price = spec[priceKey];
+          if (!price) continue;
+          let p = parseInt(price.replace('$', ''));
+          if (p >= min && p <= max) results.push({ name: key, ...spec, price: price });
+        }
+        showResultsInChat(results);
+        return;
+      }
+
+      // Single GPU spec
+      match = input.match(/spec\s+([a-zA-Z0-9 ]+)/i);
+      if (match) {
+        let term = match[1].trim();
+        let found = Object.entries(gpuSpecs).find(([key]) =>
+          key.includes(term) || key.replace(/\s/g, '').includes(term.replace(/\s/g, ''))
+        );
+        if (!found) found = Object.entries(gpuSpecs).find(([key]) => key.includes(term));
+        if (found) {
+          let [key, spec] = found;
+          showBotTyping(() => {
+            addMessage("bot", `
+              <b>${key.toUpperCase()}</b><br>
+              VRAM: ${spec.vram}, Arch: ${spec.arch}, Perf: ${spec.perf}, Released: ${spec.release}<br>
+              TDP: ${spec.tdp}, PSU: ${spec.psu}, Price (New): ${spec.price2025_new || spec.msrp}, Price (Used): ${spec.price2025_used || "-"}<br>
+              Gaming: ${spec.performance?.gaming || '-'}, Editing: ${spec.performance?.editing || '-'}, AI: ${spec.performance?.ai || '-'}
+            `);
+          });
+        } else {
+          showBotTyping(() => {
+            addMessage("bot", "GPU not found!");
+          });
+        }
+        return;
+      }
+
+      // VS Comparison (multi-GPU support)
+      if (input.includes('vs')) {
+        const terms = input.split('vs').map(t => t.trim()).filter(Boolean);
+        const foundGpus = [];
+        for (const term of terms) {
+          let found = Object.entries(gpuSpecs).find(([key]) =>
+            key.toLowerCase().includes(term) || key.replace(/\s/g, '').toLowerCase().includes(term.replace(/\s/g, ''))
+          );
+          if (found) {
+            foundGpus.push({ name: found[0], ...found[1] });
+          }
+        }
+        if (foundGpus.length >= 2) {
+          let summary = foundGpus.map(gpu =>
+            `<b>${gpu.name.toUpperCase()}</b>: VRAM ${gpu.vram}, TDP ${gpu.tdp}, PSU ${gpu.psu}, Price: ${gpu.price2025_new || gpu.msrp}, Perf: ${gpu.perf}`
+          ).join('<br>');
+          showBotTyping(() => {
+            addMessage("bot", summary);
+          });
+        } else {
+          showBotTyping(() => {
+            addMessage("bot", "Comparison failed! (Check your input)");
+          });
+        }
+        return;
+      }
+
+      // Help
+      if (["help"].includes(input)) {
+        showBotTyping(() => {
+          addMessage("bot", `
+            <b>GPU Bot Help</b><br>
+            <ul>
+              <li><b>spec 4090</b> - Show spec for a GPU</li>
+              <li><b>3070 vs 4060</b> - Compare multiple GPUs</li>
+              <li><b>price 100 400</b> - List GPUs in $100-400</li>
+              <li><b>help</b> - Show this help</li>
+            </ul>
+          `);
+        });
+        return;
+      }
+
+      // Test
+      if (["test", "testing", "cek"].includes(input)) {
+        showBotTyping(() => {
+          addMessage("bot", "Test success ✅ — how can I help you today?");
+        });
+        return;
+      }
+
+      // Friendly hello
+      if (["hello", "hallo", "hi", "hey"].includes(input)) {
+        showBotTyping(() => {
+          addMessage("bot", "hello i was gpu chat bot, how can i help you today? say <b>help</b> if you confused 🙂");
+        });
+        return;
+      }
+
+      // Credits/About
+      if (["credit", "credits", "about"].includes(input)) {
+        showBotTyping(() => {
+          addMessage("bot", "👋 Hello, I was made by <b>Holabro</b> and powered by <b>ChatGPT</b>.");
+        });
+        return;
+      }
+
+      // Unknown
+      showBotTyping(() => {
+        addMessage("bot", "Unknown command. Type <b>help</b> for available commands.");
+      });
+    }
+
+    userInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        let val = userInput.value;
+        addMessage("user", val);
+        handleUserInput(val);
+        userInput.value = "";
+      }
+    });
+
+    function promptFilter(type) {
+      let min = prompt(`Minimum ${type}?`);
+      let max = prompt(`Maximum ${type}?`);
+      if (!min || !max) return;
+      min = parseInt(min); max = parseInt(max);
+      if (type === "Price") {
+        let results = [];
+        let condition = getSelectedCondition();
+        let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
+        for (const [key, spec] of Object.entries(gpuSpecs)) {
+          let price = spec[priceKey];
+          if (!price) continue;
+          let p = parseInt(price.replace('$', ''));
+          if (p >= min && p <= max) results.push({ name: key, ...spec, price: price });
+        }
+        showResultsInChat(results);
+      }
+    }
+    document.getElementById("filterPrice").onclick = () => promptFilter("Price");
+    document.getElementById("filterTDP").onclick = () => alert('TDP filter not implemented in this demo!');
+    document.getElementById("filterPSU").onclick = () => alert('PSU filter not implemented in this demo!');
+  </script>
 </body>
 </html>
