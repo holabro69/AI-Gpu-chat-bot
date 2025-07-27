@@ -292,6 +292,16 @@ function handleUserInput(input) {
     return;
   }
 
+  // Simple "test" command
+  if (["test", "testing", "cek"].includes(input)) {
+    showBotTyping(() => {
+      addMessage("bot", "Test success ✅ — how can I help you today?");
+      clearChart();
+    });
+    return;
+  }
+
+  // Unknown command fallback
   showBotTyping(() => {
     addMessage("bot", "Unknown command. Type <b>help</b> for available commands.");
     clearChart();
