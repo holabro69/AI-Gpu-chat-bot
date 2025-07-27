@@ -111,12 +111,13 @@ function clearChart() {
 function handleUserInput(input) {
   input = input.trim().toLowerCase();
 
-  // ==== HUMANOID "Best GPU for Budget & Use-case" ====
-  let bestGpuMatch = input.match(/(find|best|recommend).*(gpu|graphics card|vga).*(?:for)? ?((?:ai|editing|gaming|video|ml|workstation|deep learning|rendering|combo|and|or|,| )*)?(?:under|below|<=|less than)?\s?\$?(\d{2,5})?/i);
+  // ==== HUMANOID "Best GPU for Budget & Use-case" (UPGRADED) ====
+  let bestGpuMatch = input.match(
+    /(find|best|recommend)[\s\w]*(gpu|graphics card|vga)?[\s\w]*(?:under|below|<=|less than)?\s*\$?(\d{2,5})?[\s\w]*(?:for)?\s*([\w\s,]*)?/i
+  );
   if (bestGpuMatch) {
-    // Get budget and use cases
-    let budget = bestGpuMatch[4] ? parseInt(bestGpuMatch[4]) : null;
-    let usecaseText = (bestGpuMatch[3] || '').replace(/and|or|,|\s+/gi, ' ').trim();
+    let budget = bestGpuMatch[3] ? parseInt(bestGpuMatch[3]) : null;
+    let usecaseText = (bestGpuMatch[4] || '').replace(/and|or|,|\s+/gi, ' ').trim();
     let useCases = [];
     if (/ai|ml|deep learning/i.test(usecaseText)) useCases.push('ai');
     if (/edit|video|workstation|render/i.test(usecaseText)) useCases.push('editing');
@@ -127,7 +128,6 @@ function handleUserInput(input) {
     let condition = getSelectedCondition();
     let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
 
-    // Find all GPUs in budget with use case perf score
     let gpus = [];
     for (const [key, spec] of Object.entries(gpuSpecs)) {
       let price = spec[priceKey];
@@ -138,7 +138,6 @@ function handleUserInput(input) {
       if (!hasUseCase) continue;
       gpus.push({ name: key, ...spec, price });
     }
-    // Sort by sum of perf scores for requested usecases
     gpus.sort((a, b) => {
       let aScore = useCases.reduce((s, type) => s + (a.performance[type] || 0), 0);
       let bScore = useCases.reduce((s, type) => s + (b.performance[type] || 0), 0);
