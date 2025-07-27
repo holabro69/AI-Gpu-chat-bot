@@ -41,11 +41,12 @@
     /* === FAKE GPU WITH RGB === */
     .gpu-rgb-fake {
       width: 400px;
-      margin: 0 auto 16px auto;
+      margin: 34px auto 8px auto;
       display: flex;
       justify-content: center;
       perspective: 120px;
       filter: drop-shadow(0 0 30px #00ffeebb);
+      z-index: 3;
     }
 
     .gpu-body {
@@ -179,7 +180,24 @@
       text-shadow: 0 0 12px #0ff, 0 0 22px #0ff, 0 0 30px #fff;
     }
 
-    /* (Your other CSS here for chat, input, etc.) */
+    /* Chat placeholder styling - replace with your own bot! */
+    .chatbot-placeholder {
+      width: 100%;
+      min-height: 320px;
+      background: rgba(10,20,28,0.55);
+      border-radius: 14px;
+      margin: 40px auto 0 auto;
+      padding: 48px 20px 20px 20px;
+      color: #eee;
+      font-size: 1.15em;
+      text-align: center;
+      letter-spacing: 0.04em;
+      box-shadow: 0 0 30px #0ff2;
+      border: 1.5px solid #0ff3;
+    }
+    .chatbot-placeholder b {
+      color: #00fff7;
+    }
   </style>
 </head>
 <body>
@@ -196,10 +214,12 @@
   </div>
   <div class="container">
     <h2>GPU Data Chat Bot 💬</h2>
-    <!-- ...the rest of your chat app here... -->
-    <div style="text-align:center; margin-top: 40px; color: #888; font-size:1em;">
-      <b>Demo:</b> The fake GPU above is just for vibes 😎<br>
-      <b>Tips:</b> Try adding your chatbot UI below, or swap the brand/chip text!
+    <div class="chatbot-placeholder">
+      <b>This is your cyberpunk GPU visual!</b><br>
+      <br>
+      Place your chat bot code here.<br>
+      <br>
+      <span style="color:#ffe086; font-size:1em; opacity:0.7;">(The GPU above is 100% CSS, not an image!)</span>
     </div>
   </div>
 </body>
