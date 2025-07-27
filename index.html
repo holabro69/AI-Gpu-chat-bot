@@ -4,130 +4,203 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GPU Data Chat Bot</title>
-  <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Orbitron', 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: #0a0a0a;
+      color: #00ffee;
+      margin: 0;
+      min-height: 100vh;
+      transition: background 0.22s, color 0.22s;
+    }
+
+    #vanta-bg {
+      position: fixed;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 32px auto;
+      background: rgba(0,0,0,0.4);
+      border-radius: 20px;
+      padding: 1.5em;
+      box-shadow: 0 0 15px #0ff;
+      display: flex;
+      flex-direction: column;
+      min-height: 80vh;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* === FAKE GPU WITH RGB === */
+    .gpu-rgb-fake {
+      width: 400px;
+      margin: 0 auto 16px auto;
+      display: flex;
+      justify-content: center;
+      perspective: 120px;
+      filter: drop-shadow(0 0 30px #00ffeebb);
+    }
+
+    .gpu-body {
+      background: linear-gradient(120deg, #161a21 65%, #232c33 100%);
+      border-radius: 20px 20px 34px 34px;
+      box-shadow: 0 0 24px #0ff7, 0 0 100px #18d8e0b6, 0 0 90px #38aaff20 inset;
+      width: 350px;
+      height: 75px;
+      position: relative;
+      overflow: visible;
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+      border: 3.5px solid #3dfffd80;
+    }
+
+    .gpu-rgb-bar {
+      width: 96%;
+      height: 13px;
+      margin: 10px auto 0 auto;
+      border-radius: 11px 11px 18px 18px;
+      background: linear-gradient(270deg,#00fff7,#ff00ea,#005eff,#00ff99,#ffeb3b,#00fff7,#ff2222,#00fff7);
+      background-size: 800% 800%;
+      animation: rgb-run-gpu 1.45s linear infinite;
+      box-shadow: 0 0 28px #00fff9cc, 0 0 65px #0ff2;
+      position: relative;
+      z-index: 3;
+      filter: brightness(1.22) blur(0.2px) drop-shadow(0 0 12px #4afcff);
+    }
+
+    @keyframes rgb-run-gpu {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    .gpu-brand {
+      position: absolute;
+      left: 30px;
+      top: 36px;
+      font-family: 'Orbitron', 'Arial', sans-serif;
+      font-size: 1.26em;
+      letter-spacing: 0.11em;
+      color: #0ff;
+      opacity: 0.96;
+      text-shadow: 0 0 18px #fff, 0 0 14px #0ff, 0 0 25px #0ff;
+      z-index: 2;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .gpu-chip {
+      position: absolute;
+      right: 35px;
+      top: 33px;
+      width: 31px;
+      height: 16px;
+      background: linear-gradient(90deg,#0ff,#fff 50%,#00e1ff);
+      border-radius: 4px;
+      box-shadow: 0 0 15px #0ffb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.86em;
+      color: #012;
+      letter-spacing: 0.06em;
+      border: 1.5px solid #1ff7ff;
+    }
+
+    .gpu-fan {
+      width: 38px;
+      height: 38px;
+      background: radial-gradient(circle at 50% 50%, #26292e 60%, #222 100%);
+      border-radius: 50%;
+      position: absolute;
+      top: 27px;
+      border: 3px solid #0ff3;
+      box-shadow: 0 0 10px #07ffff2a;
+      animation: fan-spin 0.85s linear infinite;
+      z-index: 1;
+      filter: blur(0.2px);
+      overflow: hidden;
+    }
+    .gpu-fan1 { left: 85px; }
+    .gpu-fan2 { left: 158px; animation-delay: 0.35s; }
+    .gpu-fan3 { left: 230px; animation-delay: 0.6s; }
+
+    @keyframes fan-spin {
+      100% { transform: rotate(360deg);}
+    }
+
+    .gpu-fan-blades {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0; top: 0;
+      pointer-events: none;
+    }
+    .gpu-fan-blades::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: repeating-conic-gradient(from 0deg, #0ff 0 7deg, transparent 7deg 17deg);
+      border-radius: 50%;
+      opacity: 0.12;
+      filter: blur(1px);
+    }
+
+    /* Extra Cyberpunk Glow */
+    .gpu-body::after {
+      content: '';
+      position: absolute;
+      bottom: -19px;
+      left: 8%;
+      width: 84%;
+      height: 13px;
+      border-radius: 20px;
+      background: radial-gradient(circle, #1ff 30%, transparent 90%);
+      opacity: 0.19;
+      filter: blur(6px);
+      z-index: 2;
+    }
+
+    h2 {
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.8em;
+      letter-spacing: 0.05em;
+      padding: 0.5em 0;
+      color: #0ff;
+      text-shadow: 0 0 12px #0ff, 0 0 22px #0ff, 0 0 30px #fff;
+    }
+
+    /* (Your other CSS here for chat, input, etc.) */
+  </style>
 </head>
 <body>
-  <!-- CYBERPUNK PARTICLES BACKGROUND -->
-  <div id="vanta-bg"></div>
-  <div class="container">
-    <div class="rgb-control-group">
-      <label>RGB Mode:
-        <select id="rgbMode">
-          <option value="wave">Wave</option>
-          <option value="running">Running</option>
-          <option value="static">Static</option>
-        </select>
-      </label>
-      <label>Pick Color:
-        <input type="color" id="rgbColor" value="#00fff7">
-      </label>
-    </div>
-    <div class="rgb-strip"></div>
-    <h2>GPU Data Chat Bot 💬</h2>
-    <div id="chatbox"></div>
-    <canvas id="perfChart"></canvas>
-    <div class="input-group">
-      <input type="text" id="userInput" autocomplete="off" placeholder="Try: 'spec rtx 4090', '4070 super vs 7900 xt', 'price 400 700 used', 'help'">
-    </div>
-    <div class="btns">
-      <button id="toggleMode">🌗 Theme</button>
-      <button id="filterPrice">💰 Price</button>
-      <button id="filterPSU">🔌 PSU</button>
-      <button id="filterTDP">🔥 TDP</button>
-    </div>
-    <!-- Used/New radio selector -->
-    <div class="input-group" style="margin:10px 0 0 0;">
-      <label style="margin-right:10px;">
-        <input type="radio" name="condition" value="new" checked> New
-      </label>
-      <label>
-        <input type="radio" name="condition" value="used"> Used
-      </label>
-    </div>
-    <div class="disclaimer">
-      ⚠️ <b>Disclaimer:</b> This tool is for quick reference only.<br>
-      Do <b>not rely on this data for critical decisions</b>; info may be incomplete or inaccurate.<br>
-      <b>Always do more research</b> from trusted sources for the latest and most accurate GPU details.
-    </div>
-    <div id="footer">
-      🏗️ Built by <strong>Holabro</strong> | 🤖 Powered by <strong>ChatGPT</strong>
+  <!-- Fake GPU RGB Model (animated, just for fun!) -->
+  <div class="gpu-rgb-fake">
+    <div class="gpu-body">
+      <div class="gpu-rgb-bar"></div>
+      <div class="gpu-brand">GIGABYTE</div>
+      <div class="gpu-chip">RTX</div>
+      <div class="gpu-fan gpu-fan1"><div class="gpu-fan-blades"></div></div>
+      <div class="gpu-fan gpu-fan2"><div class="gpu-fan-blades"></div></div>
+      <div class="gpu-fan gpu-fan3"><div class="gpu-fan-blades"></div></div>
     </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="gpu-data.js"></script>
-  <script src="main.js"></script>
-
-  <!-- === CYBERPUNK PARTICLES (FULL PAGE) === -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
-  <script>
-    // Make sure particles are always full screen and behind everything!
-    document.body.style.position = "relative";
-    const vantaBg = document.getElementById('vanta-bg');
-    Object.assign(vantaBg.style, {
-      position: 'fixed',
-      left: 0,
-      top: 0,
-      width: '100vw',
-      height: '100vh',
-      zIndex: -2,
-      pointerEvents: 'none'
-    });
-    VANTA.NET({
-      el: "#vanta-bg",
-      mouseControls: true,
-      touchControls: true,
-      minHeight: 200.00,
-      minWidth: 200.00,
-      scale: 1.0,
-      scaleMobile: 1.0,
-      color: 0x00fff7,
-      backgroundColor: 0x0a0a0a,
-      points: 16.0,
-      maxDistance: 20.0,
-      spacing: 18.0
-    });
-  </script>
-  <!-- === END CYBERPUNK PARTICLES === -->
-
-  <!-- === LIVE RGB CONTROLS === -->
-  <script>
-    const rgbMode = document.getElementById('rgbMode');
-    const rgbColor = document.getElementById('rgbColor');
-    const rgbStrip = document.querySelector('.rgb-strip');
-    const container = document.querySelector('.container');
-
-    function updateRGBStyle() {
-      let color = rgbColor.value;
-      let mode = rgbMode.value;
-
-      if (mode === 'static') {
-        container.style.setProperty('--rgb-gradient', color);
-        rgbStrip.style.background = color;
-        container.style.setProperty('--rgb-animation', 'none');
-        rgbStrip.style.animation = 'none';
-      } else if (mode === 'running') {
-        // Single-color bar moves across (LED style)
-        let gradient = `linear-gradient(90deg, transparent 0%, ${color} 40%, ${color} 60%, transparent 100%)`;
-        container.style.setProperty('--rgb-gradient', gradient);
-        rgbStrip.style.background = gradient;
-        container.style.setProperty('--rgb-animation', 'running-bar 1.6s linear infinite');
-        rgbStrip.style.animation = 'running-bar 1.6s linear infinite';
-      } else {
-        // Wave: animated multi-color
-        let gradient = `linear-gradient(270deg, ${color}, #ff00ea, #005eff, ${color})`;
-        container.style.setProperty('--rgb-gradient', gradient);
-        rgbStrip.style.background = gradient;
-        container.style.setProperty('--rgb-animation', 'rgb-border 8s linear infinite');
-        rgbStrip.style.animation = 'rgb-border 8s linear infinite';
-      }
-    }
-    rgbMode.addEventListener('change', updateRGBStyle);
-    rgbColor.addEventListener('input', updateRGBStyle);
-    window.addEventListener('DOMContentLoaded', updateRGBStyle);
-  </script>
-  <!-- === END LIVE RGB CONTROLS === -->
+  <div class="container">
+    <h2>GPU Data Chat Bot 💬</h2>
+    <!-- ...the rest of your chat app here... -->
+    <div style="text-align:center; margin-top: 40px; color: #888; font-size:1em;">
+      <b>Demo:</b> The fake GPU above is just for vibes 😎<br>
+      <b>Tips:</b> Try adding your chatbot UI below, or swap the brand/chip text!
+    </div>
+  </div>
 </body>
 </html>
