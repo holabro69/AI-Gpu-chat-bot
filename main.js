@@ -110,7 +110,61 @@ function clearChart() {
 
 function handleUserInput(input) {
   input = input.trim().toLowerCase();
-  if (!input) return;
+
+  // ==== HUMANOID "Best GPU for Budget & Use-case" ====
+  let bestGpuMatch = input.match(/(find|best|recommend).*(gpu|graphics card|vga).*(?:for)? ?((?:ai|editing|gaming|video|ml|workstation|deep learning|rendering|combo|and|or|,| )*)?(?:under|below|<=|less than)?\s?\$?(\d{2,5})?/i);
+  if (bestGpuMatch) {
+    // Get budget and use cases
+    let budget = bestGpuMatch[4] ? parseInt(bestGpuMatch[4]) : null;
+    let usecaseText = (bestGpuMatch[3] || '').replace(/and|or|,|\s+/gi, ' ').trim();
+    let useCases = [];
+    if (/ai|ml|deep learning/i.test(usecaseText)) useCases.push('ai');
+    if (/edit|video|workstation|render/i.test(usecaseText)) useCases.push('editing');
+    if (/game/i.test(usecaseText)) useCases.push('gaming');
+    if (useCases.length === 0) useCases = ['gaming', 'editing', 'ai'];
+    if (!budget) budget = 400;
+
+    let condition = getSelectedCondition();
+    let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
+
+    // Find all GPUs in budget with use case perf score
+    let gpus = [];
+    for (const [key, spec] of Object.entries(gpuSpecs)) {
+      let price = spec[priceKey];
+      if (!price) continue;
+      let p = parseInt(price.replace('$', ''));
+      if (p > budget) continue;
+      let hasUseCase = useCases.some(type => typeof spec.performance?.[type] === "number");
+      if (!hasUseCase) continue;
+      gpus.push({ name: key, ...spec, price });
+    }
+    // Sort by sum of perf scores for requested usecases
+    gpus.sort((a, b) => {
+      let aScore = useCases.reduce((s, type) => s + (a.performance[type] || 0), 0);
+      let bScore = useCases.reduce((s, type) => s + (b.performance[type] || 0), 0);
+      return bScore - aScore;
+    });
+
+    let topList = gpus.slice(0, 4);
+    let resp = "";
+
+    if (topList.length === 0) {
+      resp = `😔 Bro, nothing found under <b>$${budget}</b> for <b>${useCases.join(' / ')}</b> (${condition}). Try raising your budget or changing use case.`;
+    } else {
+      resp = `Yo dawg! 🔥 Here’s my top picks under <b>$${budget}</b> for <b>${useCases.join(' / ')}</b> (${condition}):<ul style="margin-top:4px">`;
+      topList.forEach(gpu => {
+        resp += `<li><b>${gpu.name.toUpperCase()}</b> — ${gpu.vram}, Perf: ${gpu.perf}, Released: ${gpu.release}, Price: <span style="color:#18a058">${gpu.price}</span><br>
+        <small>Gaming: ${gpu.performance?.gaming || "-"} | Editing: ${gpu.performance?.editing || "-"} | AI: ${gpu.performance?.ai || "-"}</small></li>`;
+      });
+      resp += "</ul><div style='margin-top:7px;'>Need to compare? Type <b>3070 vs 4060</b> or similar!</div>";
+    }
+    showBotTyping(() => {
+      addMessage("bot", resp);
+      if (topList.length >= 2) drawChart(topList);
+      else clearChart();
+    });
+    return;
+  }
 
   // Price filter
   let match = input.match(/price\s+(\d+)\s+(\d+)(?:\s+(used|new))?/i);
