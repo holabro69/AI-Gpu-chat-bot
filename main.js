@@ -265,7 +265,7 @@ function handleUserInput(input) {
     return;
   }
 
-  // Help & Credit/About
+  // Help command
   if (["help"].includes(input)) {
     showBotTyping(() => {
       addMessage("bot", `
@@ -284,18 +284,29 @@ function handleUserInput(input) {
     });
     return;
   }
-  if (["credit", "credits", "about", "hello"].includes(input)) {
+
+  // Test command
+  if (["test", "testing", "cek"].includes(input)) {
     showBotTyping(() => {
-      addMessage("bot", "👋 Hello, I was made by <b>Holabro</b> and powered by <b>ChatGPT</b>.");
+      addMessage("bot", "Test success ✅ — how can I help you today?");
       clearChart();
     });
     return;
   }
 
-  // Simple "test" command
-  if (["test", "testing", "cek"].includes(input)) {
+  // Friendly hello command (YOUR STYLE)
+  if (["hello", "hallo", "hi", "hey"].includes(input)) {
     showBotTyping(() => {
-      addMessage("bot", "Test success ✅ — how can I help you today?");
+      addMessage("bot", "hello i was gpu chat bot, how can i help you today? say <b>help</b> if you confused 🙂");
+      clearChart();
+    });
+    return;
+  }
+
+  // Credits/About
+  if (["credit", "credits", "about"].includes(input)) {
+    showBotTyping(() => {
+      addMessage("bot", "👋 Hello, I was made by <b>Holabro</b> and powered by <b>ChatGPT</b>.");
       clearChart();
     });
     return;
