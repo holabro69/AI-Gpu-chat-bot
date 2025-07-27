@@ -398,10 +398,350 @@
     window.addEventListener('DOMContentLoaded', updateRGBStyle);
   </script>
   <script>
-    // ==== GPU Data & Chatbot code from above (SAME AS PREV FULL CODE) ====
-    // (Keep your existing chatbot code, Chart.js logic, etc, here...)
-    // ... Paste your chatbot JS logic here ...
-    // For brevity, not repeating, but use the full working JS you already have!
+    // ==== GPU Data ====
+    const gpuSpecs = {
+      "rtx 4090": {
+        vram: "24GB", arch: "Ada Lovelace", perf: "Insane", release: 2022, tdp: "450W", msrp: "$1599",
+        price2025_new: "$1575", price2025_used: "$1299", psu: "1000W", performance: { gaming: 164, editing: 138, ai: 162 }
+      },
+      "rtx 4070 super": {
+        vram: "12GB", arch: "Ada Lovelace", perf: "High-end", release: 2024, tdp: "220W", msrp: "$599",
+        price2025_new: "$565", price2025_used: "$443", psu: "650W", performance: { gaming: 124, editing: 110, ai: 110 }
+      },
+      "rx 7900 xt": {
+        vram: "20GB", arch: "RDNA 3", perf: "Ultra high-end+", release: 2022, tdp: "300W", msrp: "$899",
+        price2025_new: "$729", price2025_used: "$532", psu: "800W", performance: { gaming: 134, editing: 110, ai: 99 }
+      },
+      "rtx 3060": {
+        vram: "12GB", arch: "Ampere", perf: "Mid-range+", release: 2021, tdp: "170W", msrp: "$329",
+        price2025_new: "$235", price2025_used: "$171", psu: "550W", performance: { gaming: 83, editing: 75, ai: 63 }
+      },
+      "aorus rtx 5060 ti": {
+        vram: "16GB", arch: "Ada Lovelace Refresh", perf: "High-end+", release: 2025, tdp: "220W", msrp: "$699",
+        price2025_new: "$669", price2025_used: "$579", psu: "650W", performance: { gaming: 136, editing: 120, ai: 115 }
+      }
+    };
+  </script>
+  <script>
+    // ==== THEME SWITCHER ====
+    const themeBtn = document.getElementById("toggleMode");
+    themeBtn.onclick = function () {
+      document.body.classList.toggle("light");
+      if (document.body.classList.contains("light")) {
+        localStorage.setItem("theme", "light");
+      } else {
+        localStorage.setItem("theme", "dark");
+      }
+    };
+    window.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("theme");
+      if (saved === "light") {
+        document.body.classList.add("light");
+      } else {
+        document.body.classList.remove("light");
+      }
+    });
+
+    // ==== CHATBOT & COMMANDS ====
+    const chatbox = document.getElementById("chatbox");
+    const userInput = document.getElementById("userInput");
+    let chartInstance = null;
+
+    function getSelectedCondition() {
+      return document.querySelector('input[name="condition"]:checked').value;
+    }
+
+    function addMessage(sender, text) {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "msg " + sender + (sender === "bot" ? " pulse" : "");
+      msgDiv.innerHTML = text;
+      chatbox.appendChild(msgDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function showBotTyping(callback) {
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "msg bot pulse";
+      typingDiv.innerHTML = `<span style="letter-spacing:0.15em;">...</span>`;
+      chatbox.appendChild(typingDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+      setTimeout(() => {
+        typingDiv.remove();
+        if (callback) callback();
+      }, 650 + Math.random() * 500);
+    }
+
+    function drawChart(gpus) {
+      const ctx = document.getElementById('perfChart').getContext('2d');
+      const labels = gpus.map(g => g.name.toUpperCase());
+      const gaming = gpus.map(g => g.performance?.gaming || 0);
+      const editing = gpus.map(g => g.performance?.editing || 0);
+      const ai = gpus.map(g => g.performance?.ai || 0);
+
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Gaming', data: gaming, backgroundColor: '#00e5ff99' },
+            { label: 'Editing', data: editing, backgroundColor: '#36ff9e99' },
+            { label: 'AI', data: ai, backgroundColor: '#bc38ff99' }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            title: { display: true, text: 'GPU Performance Score (higher is better)' }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+    function clearChart() {
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = null;
+      document.getElementById('perfChart').getContext('2d').clearRect(0,0,510,260);
+    }
+
+    function showResultsInChat(results, compareType) {
+      if (results.length === 0) {
+        showBotTyping(() => {
+          addMessage("bot", "No GPUs found for your filter!");
+          clearChart();
+        });
+        return;
+      }
+      let html = "<b>Matching GPUs:</b><ul style='margin-top:4px'>";
+      results.forEach(gpu => {
+        html += `<li><b>${gpu.name.toUpperCase()}</b>: VRAM ${gpu.vram}, TDP ${gpu.tdp}, PSU ${gpu.psu}, Perf: ${gpu.perf}, Price: <span style=\"color:#18a058\">${gpu.price || gpu.msrp}</span></li>`;
+      });
+      html += "</ul>";
+      showBotTyping(() => {
+        addMessage("bot", html);
+        if (results.length >= 2 || compareType === 'force') {
+          drawChart(results);
+        } else {
+          clearChart();
+        }
+      });
+    }
+
+    function handleUserInput(input) {
+      input = input.trim().toLowerCase();
+
+      // Best GPU for Budget & Use-case (simple version)
+      let bestGpuMatch = input.match(
+        /(find|best|recommend)[\s\w]*(gpu|graphics card|vga)?[\s\w]*(?:under|below|<=|less than)?\s*\$?(\d{2,5})?[\s\w]*(?:for)?\s*([\w\s,]*)?/i
+      );
+      if (bestGpuMatch) {
+        let budget = bestGpuMatch[3] ? parseInt(bestGpuMatch[3]) : null;
+        let usecaseText = (bestGpuMatch[4] || '').replace(/and|or|,|\s+/gi, ' ').trim();
+        let useCases = [];
+        if (/ai|ml|deep learning/i.test(usecaseText)) useCases.push('ai');
+        if (/edit|video|workstation|render/i.test(usecaseText)) useCases.push('editing');
+        if (/game/i.test(usecaseText)) useCases.push('gaming');
+        if (useCases.length === 0) useCases = ['gaming', 'editing', 'ai'];
+        if (!budget) budget = 400;
+
+        let condition = getSelectedCondition();
+        let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
+
+        let gpus = [];
+        for (const [key, spec] of Object.entries(gpuSpecs)) {
+          let price = spec[priceKey];
+          if (!price) continue;
+          let p = parseInt(price.replace('$', ''));
+          if (p > budget) continue;
+          let hasUseCase = useCases.some(type => typeof spec.performance?.[type] === "number");
+          if (!hasUseCase) continue;
+          gpus.push({ name: key, ...spec, price });
+        }
+        gpus.sort((a, b) => {
+          let aScore = useCases.reduce((s, type) => s + (a.performance[type] || 0), 0);
+          let bScore = useCases.reduce((s, type) => s + (b.performance[type] || 0), 0);
+          return bScore - aScore;
+        });
+
+        let topList = gpus.slice(0, 4);
+        let resp = "";
+
+        if (topList.length === 0) {
+          resp = `😔 Bro, nothing found under <b>$${budget}</b> for <b>${useCases.join(' / ')}</b> (${condition}). Try raising your budget or changing use case.`;
+        } else {
+          resp = `Yo dawg! 🔥 Here’s my top picks under <b>$${budget}</b> for <b>${useCases.join(' / ')}</b> (${condition}):<ul style="margin-top:4px">`;
+          topList.forEach(gpu => {
+            resp += `<li><b>${gpu.name.toUpperCase()}</b> — ${gpu.vram}, Perf: ${gpu.perf}, Released: ${gpu.release}, Price: <span style="color:#18a058">${gpu.price}</span><br>
+            <small>Gaming: ${gpu.performance?.gaming || "-"} | Editing: ${gpu.performance?.editing || "-"} | AI: ${gpu.performance?.ai || "-"}</small></li>`;
+          });
+          resp += "</ul><div style='margin-top:7px;'>Need to compare? Type <b>3070 vs 4060</b> or similar!</div>";
+        }
+        showBotTyping(() => {
+          addMessage("bot", resp);
+          drawChart(topList);
+        });
+        return;
+      }
+
+      // Price filter
+      let match = input.match(/price\s+(\d+)\s+(\d+)(?:\s+(used|new))?/i);
+      if (match) {
+        let min = parseInt(match[1]), max = parseInt(match[2]);
+        let condition = match[3] || getSelectedCondition();
+        let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
+        let results = [];
+        for (const [key, spec] of Object.entries(gpuSpecs)) {
+          let price = spec[priceKey];
+          if (!price) continue;
+          let p = parseInt(price.replace('$', ''));
+          if (p >= min && p <= max) results.push({ name: key, ...spec, price: price });
+        }
+        showResultsInChat(results);
+        return;
+      }
+
+      // Single GPU spec
+      match = input.match(/spec\s+([a-zA-Z0-9 ]+)/i);
+      if (match) {
+        let term = match[1].trim();
+        let found = Object.entries(gpuSpecs).find(([key]) =>
+          key.includes(term) || key.replace(/\s/g, '').includes(term.replace(/\s/g, ''))
+        );
+        if (!found) found = Object.entries(gpuSpecs).find(([key]) => key.includes(term));
+        if (found) {
+          let [key, spec] = found;
+          showBotTyping(() => {
+            addMessage("bot", `
+              <b>${key.toUpperCase()}</b><br>
+              VRAM: ${spec.vram}, Arch: ${spec.arch}, Perf: ${spec.perf}, Released: ${spec.release}<br>
+              TDP: ${spec.tdp}, PSU: ${spec.psu}, Price (New): ${spec.price2025_new || spec.msrp}, Price (Used): ${spec.price2025_used || "-"}<br>
+              Gaming: ${spec.performance?.gaming || '-'}, Editing: ${spec.performance?.editing || '-'}, AI: ${spec.performance?.ai || '-'}
+            `);
+            drawChart([{ name: key, ...spec }]);
+          });
+        } else {
+          showBotTyping(() => {
+            addMessage("bot", "GPU not found!");
+            clearChart();
+          });
+        }
+        return;
+      }
+
+      // VS Comparison (multi-GPU support)
+      if (input.includes('vs')) {
+        const terms = input.split('vs').map(t => t.trim()).filter(Boolean);
+        const foundGpus = [];
+        for (const term of terms) {
+          let found = Object.entries(gpuSpecs).find(([key]) =>
+            key.toLowerCase().includes(term) || key.replace(/\s/g, '').toLowerCase().includes(term.replace(/\s/g, ''))
+          );
+          if (found) {
+            foundGpus.push({ name: found[0], ...found[1] });
+          }
+        }
+        if (foundGpus.length >= 2) {
+          let summary = foundGpus.map(gpu =>
+            `<b>${gpu.name.toUpperCase()}</b>: VRAM ${gpu.vram}, TDP ${gpu.tdp}, PSU ${gpu.psu}, Price: ${gpu.price2025_new || gpu.msrp}, Perf: ${gpu.perf}`
+          ).join('<br>');
+          showBotTyping(() => {
+            addMessage("bot", summary);
+            drawChart(foundGpus);
+          });
+        } else {
+          showBotTyping(() => {
+            addMessage("bot", "Comparison failed! (Check your input)");
+            clearChart();
+          });
+        }
+        return;
+      }
+
+      // Help
+      if (["help"].includes(input)) {
+        showBotTyping(() => {
+          addMessage("bot", `
+            <b>GPU Bot Help</b><br>
+            <ul>
+              <li><b>spec 4090</b> - Show spec for a GPU</li>
+              <li><b>3070 vs 4060</b> - Compare multiple GPUs</li>
+              <li><b>price 100 400</b> - List GPUs in $100-400</li>
+              <li><b>help</b> - Show this help</li>
+            </ul>
+          `);
+          clearChart();
+        });
+        return;
+      }
+
+      // Test
+      if (["test", "testing", "cek"].includes(input)) {
+        showBotTyping(() => {
+          addMessage("bot", "Test success ✅ — how can I help you today?");
+          clearChart();
+        });
+        return;
+      }
+
+      // Friendly hello
+      if (["hello", "hallo", "hi", "hey"].includes(input)) {
+        showBotTyping(() => {
+          addMessage("bot", "hello i was gpu chat bot, how can i help you today? say <b>help</b> if you confused 🙂");
+          clearChart();
+        });
+        return;
+      }
+
+      // Credits/About
+      if (["credit", "credits", "about"].includes(input)) {
+        showBotTyping(() => {
+          addMessage("bot", "👋 Hello, I was made by <b>Holabro</b> and powered by <b>ChatGPT</b>.");
+          clearChart();
+        });
+        return;
+      }
+
+      // Unknown
+      showBotTyping(() => {
+        addMessage("bot", "Unknown command. Type <b>help</b> for available commands.");
+        clearChart();
+      });
+    }
+
+    userInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        let val = userInput.value;
+        addMessage("user", val);
+        handleUserInput(val);
+        userInput.value = "";
+      }
+    });
+
+    function promptFilter(type) {
+      let min = prompt(`Minimum ${type}?`);
+      let max = prompt(`Maximum ${type}?`);
+      if (!min || !max) return;
+      min = parseInt(min); max = parseInt(max);
+      if (type === "Price") {
+        let results = [];
+        let condition = getSelectedCondition();
+        let priceKey = (condition === "used") ? "price2025_used" : "price2025_new";
+        for (const [key, spec] of Object.entries(gpuSpecs)) {
+          let price = spec[priceKey];
+          if (!price) continue;
+          let p = parseInt(price.replace('$', ''));
+          if (p >= min && p <= max) results.push({ name: key, ...spec, price: price });
+        }
+        showResultsInChat(results);
+      }
+    }
+    document.getElementById("filterPrice").onclick = () => promptFilter("Price");
+    document.getElementById("filterTDP").onclick = () => alert('TDP filter not implemented in this demo!');
+    document.getElementById("filterPSU").onclick = () => alert('PSU filter not implemented in this demo!');
   </script>
   <!-- === CYBERPUNK PARTICLES (FULL PAGE) === -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
@@ -435,3 +775,4 @@
   </script>
 </body>
 </html>
+
