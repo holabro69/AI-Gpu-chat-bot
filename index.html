@@ -14,7 +14,13 @@
       min-height: 100vh;
       transition: background 0.22s, color 0.22s;
     }
-
+    #vanta-bg {
+      position: fixed;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      z-index: -2;
+      pointer-events: none;
+    }
     .container {
       max-width: 600px;
       margin: 32px auto;
@@ -29,8 +35,6 @@
       overflow: hidden;
       z-index: 1;
     }
-
-    /* === FAKE GPU WITH RGB === */
     .gpu-rgb-fake {
       width: 400px;
       margin: 34px auto 8px auto;
@@ -40,7 +44,6 @@
       filter: drop-shadow(0 0 30px #00ffeebb);
       z-index: 3;
     }
-
     .gpu-body {
       background: linear-gradient(120deg, #161a21 65%, #232c33 100%);
       border-radius: 20px 20px 34px 34px;
@@ -54,7 +57,6 @@
       flex-direction: column;
       border: 3.5px solid #3dfffd80;
     }
-
     .gpu-rgb-bar {
       width: 96%;
       height: 13px;
@@ -68,45 +70,46 @@
       z-index: 3;
       filter: brightness(1.22) blur(0.2px) drop-shadow(0 0 12px #4afcff);
     }
-
     @keyframes rgb-run-gpu {
       0% { background-position: 0% 50%; }
       100% { background-position: 100% 50%; }
     }
-
     .gpu-brand {
       position: absolute;
-      left: 30px;
-      top: 36px;
+      left: 26px;
+      top: 20px;
       font-family: 'Orbitron', 'Arial', sans-serif;
-      font-size: 1.26em;
-      letter-spacing: 0.11em;
+      font-size: 1.05em;
+      letter-spacing: 0.12em;
       color: #0ff;
       opacity: 0.96;
-      text-shadow: 0 0 18px #fff, 0 0 14px #0ff, 0 0 25px #0ff;
+      text-shadow: 0 0 18px #fff, 0 0 12px #0ff, 0 0 18px #0ff;
       z-index: 2;
       font-weight: bold;
       text-transform: uppercase;
+      line-height: 1.08;
     }
-
-    .gpu-chip {
-      position: absolute;
-      right: 35px;
-      top: 33px;
-      width: 31px;
-      height: 16px;
-      background: linear-gradient(90deg,#0ff,#fff 50%,#00e1ff);
-      border-radius: 4px;
-      box-shadow: 0 0 15px #0ffb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.86em;
-      color: #012;
-      letter-spacing: 0.06em;
-      border: 1.5px solid #1ff7ff;
+    .gpu-model {
+      margin-top: 4px;
+      text-align: left;
     }
-
+    .gpu-model .aorus {
+      display: block;
+      font-size: 1.16em;
+      font-weight: bold;
+      color: #ff9100;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 10px #ffa040cc, 0 0 6px #ffb30099;
+    }
+    .gpu-model .model-details {
+      display: block;
+      font-size: 0.98em;
+      font-weight: bold;
+      color: #cfd8dc;
+      letter-spacing: 0.07em;
+      text-shadow: 0 0 4px #00fff7;
+      margin-top: 0.5px;
+    }
     .gpu-fan {
       width: 38px;
       height: 38px;
@@ -124,11 +127,9 @@
     .gpu-fan1 { left: 85px; }
     .gpu-fan2 { left: 158px; animation-delay: 0.35s; }
     .gpu-fan3 { left: 230px; animation-delay: 0.6s; }
-
     @keyframes fan-spin {
       100% { transform: rotate(360deg);}
     }
-
     .gpu-fan-blades {
       position: absolute;
       width: 100%;
@@ -146,7 +147,6 @@
       opacity: 0.12;
       filter: blur(1px);
     }
-
     .gpu-body::after {
       content: '';
       position: absolute;
@@ -160,7 +160,6 @@
       filter: blur(6px);
       z-index: 2;
     }
-
     h2 {
       text-align: center;
       font-weight: 700;
@@ -170,7 +169,6 @@
       color: #0ff;
       text-shadow: 0 0 12px #0ff, 0 0 22px #0ff, 0 0 30px #fff;
     }
-
     #chatbox {
       flex: 1;
       overflow-y: auto;
@@ -210,7 +208,6 @@
       0% { box-shadow: 0 0 10px #0ff; }
       100% { box-shadow: 0 0 20px #0ff, 0 0 40px #0ff; }
     }
-
     .input-group {
       display: flex;
       background: rgba(0, 0, 0, 0.6);
@@ -257,7 +254,6 @@
       color: #000;
       box-shadow: 0 0 20px #0ff;
     }
-
     .disclaimer {
       font-size: 0.96em;
       background: rgba(0, 255, 255, 0.1);
@@ -278,12 +274,18 @@
   </style>
 </head>
 <body>
-  <!-- Cyberpunk Fake GPU -->
+  <div id="vanta-bg"></div>
+  <!-- Fake GPU RGB Model (AORUS RTX 5060 Ti, cyberpunk style) -->
   <div class="gpu-rgb-fake">
     <div class="gpu-body">
       <div class="gpu-rgb-bar"></div>
-      <div class="gpu-brand">GIGABYTE</div>
-      <div class="gpu-chip">RTX</div>
+      <div class="gpu-brand">
+        GIGABYTE
+        <div class="gpu-model">
+          <span class="aorus">AORUS</span>
+          <span class="model-details">RTX 5060 Ti</span>
+        </div>
+      </div>
       <div class="gpu-fan gpu-fan1"><div class="gpu-fan-blades"></div></div>
       <div class="gpu-fan gpu-fan2"><div class="gpu-fan-blades"></div></div>
       <div class="gpu-fan gpu-fan3"><div class="gpu-fan-blades"></div></div>
@@ -318,9 +320,8 @@
       🏗️ Built by <strong>Holabro</strong> | 🤖 Powered by <strong>ChatGPT</strong>
     </div>
   </div>
-
   <script>
-    // GPU Data (only a few models for demo - add more as needed)
+    // GPU Data (add more as you wish)
     const gpuSpecs = {
       "rtx 4090": {
         vram: "24GB", arch: "Ada Lovelace", perf: "Insane", release: 2022, tdp: "450W", msrp: "$1599",
@@ -337,12 +338,16 @@
       "rtx 3060": {
         vram: "12GB", arch: "Ampere", perf: "Mid-range+", release: 2021, tdp: "170W", msrp: "$329",
         price2025_new: "$235", price2025_used: "$171", psu: "550W", performance: { gaming: 83, editing: 75, ai: 63 }
+      },
+      "aorus rtx 5060 ti": {
+        vram: "16GB", arch: "Ada Lovelace Refresh", perf: "High-end+", release: 2025, tdp: "220W", msrp: "$699",
+        price2025_new: "$669", price2025_used: "$579", psu: "650W", performance: { gaming: 136, editing: 120, ai: 115 }
       }
-      // ...add more GPUs as you want!
+      // Add more GPUs if you want!
     };
   </script>
   <script>
-    // ==== Theme Switcher ====
+    // Theme Switcher
     const themeBtn = document.getElementById("toggleMode");
     themeBtn.onclick = function () {
       document.body.classList.toggle("light");
@@ -361,7 +366,7 @@
       }
     });
 
-    // ==== Chat & Commands ====
+    // Chat & Commands
     const chatbox = document.getElementById("chatbox");
     const userInput = document.getElementById("userInput");
 
@@ -609,5 +614,36 @@
     document.getElementById("filterTDP").onclick = () => alert('TDP filter not implemented in this demo!');
     document.getElementById("filterPSU").onclick = () => alert('PSU filter not implemented in this demo!');
   </script>
+  <!-- === CYBERPUNK PARTICLES (FULL PAGE) === -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+  <script>
+    document.body.style.position = "relative";
+    const vantaBg = document.getElementById('vanta-bg');
+    Object.assign(vantaBg.style, {
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      width: '100vw',
+      height: '100vh',
+      zIndex: -2,
+      pointerEvents: 'none'
+    });
+    VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0x00fff7,
+      backgroundColor: 0x0a0a0a,
+      points: 16.0,
+      maxDistance: 20.0,
+      spacing: 18.0
+    });
+  </script>
+  <!-- === END CYBERPUNK PARTICLES === -->
 </body>
 </html>
