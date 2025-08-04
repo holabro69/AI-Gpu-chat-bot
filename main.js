@@ -58,19 +58,26 @@ function drawChart(gpus) {
   const labels = gpus.map(g => g.name.toUpperCase());
   const gaming = gpus.map(g => g.performance?.gaming || 0);
   const editing = gpus.map(g => g.performance?.editing || 0);
+  const modeling = gpus.map(g => g.performance?.modeling || 0);
   const ai = gpus.map(g => g.performance?.ai || 0);
 
   if (chartInstance) chartInstance.destroy();
+
+  // Only show AI bar if at least one GPU has AI data
+  let datasets = [
+    { label: 'Gaming', data: gaming, backgroundColor: '#00e5ff99' },
+    { label: 'Editing', data: editing, backgroundColor: '#36ff9e99' },
+    { label: 'Modeling', data: modeling, backgroundColor: '#fff740cc' }
+  ];
+  if (ai.some(x => x > 0)) {
+    datasets.push({ label: 'AI', data: ai, backgroundColor: '#bc38ff99' });
+  }
 
   chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: labels,
-      datasets: [
-        { label: 'Gaming', data: gaming, backgroundColor: '#00e5ff99' },
-        { label: 'Editing', data: editing, backgroundColor: '#36ff9e99' },
-        { label: 'AI', data: ai, backgroundColor: '#bc38ff99' }
-      ]
+      datasets: datasets
     },
     options: {
       responsive: true,
@@ -84,6 +91,7 @@ function drawChart(gpus) {
     }
   });
 }
+
 function clearChart() {
   if (chartInstance) chartInstance.destroy();
   chartInstance = null;
