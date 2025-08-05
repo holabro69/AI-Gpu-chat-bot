@@ -242,21 +242,21 @@ Object.assign(gpuSpecs, {
 });
 
 // =======================
-// NVIDIA RTX 5000 Series (NEW ONLY)
+// NVIDIA RTX 50 Series (ALL VARIANTS)
 // =======================
+Object.assign(gpuSpecs, {
   "rtx 5050": {
     vram: "8GB", arch: "Ada Lovelace Refresh", perf: "Entry+", release: 2025, tdp: "100W", msrp: "$229",
     price2025_new: "$220", psu: "450W",
-    performance: { gaming: 86, editing: 72, modeling: 79, ai: 58 }
-  }
-  // Add RTX 5060, 5060 Ti, 5070, 5070 Ti, 5080, 5090 etc. as available
-   "rtx 5060": {
+    performance: { gaming: 88, editing: 74, modeling: 81, ai: 62 }
+  },
+  "rtx 5060": {
     vram: "8GB", arch: "Blackwell", perf: "Mid-range", release: 2025, tdp: "140W", msrp: "$329",
     price2025_new: "$319", psu: "550W",
     performance: { gaming: 108, editing: 94, modeling: 101, ai: 80 }
   },
   "rtx 5060 ti": {
-    vram: "8/16GB", arch: "Blackwell", perf: "Mid-high", release: 2025, tdp: "170W", msrp: "$429",
+    vram: "8GB/16GB", arch: "Blackwell", perf: "Mid-high", release: 2025, tdp: "170W", msrp: "$429",
     price2025_new: "$419", psu: "600W",
     performance: { gaming: 120, editing: 106, modeling: 114, ai: 91 }
   },
@@ -281,6 +281,7 @@ Object.assign(gpuSpecs, {
     performance: { gaming: 150, editing: 150, modeling: 150, ai: 150 }
   }
 });
+
  
 // =======================
 // AMD RX 500 Series
