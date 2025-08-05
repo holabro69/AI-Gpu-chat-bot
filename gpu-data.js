@@ -244,15 +244,44 @@ Object.assign(gpuSpecs, {
 // =======================
 // NVIDIA RTX 5000 Series (NEW ONLY)
 // =======================
-Object.assign(gpuSpecs, {
   "rtx 5050": {
     vram: "8GB", arch: "Ada Lovelace Refresh", perf: "Entry+", release: 2025, tdp: "100W", msrp: "$229",
     price2025_new: "$220", psu: "450W",
     performance: { gaming: 86, editing: 72, modeling: 79, ai: 58 }
   }
   // Add RTX 5060, 5060 Ti, 5070, 5070 Ti, 5080, 5090 etc. as available
+   "rtx 5060": {
+    vram: "8GB", arch: "Blackwell", perf: "Mid-range", release: 2025, tdp: "140W", msrp: "$329",
+    price2025_new: "$319", psu: "550W",
+    performance: { gaming: 108, editing: 94, modeling: 101, ai: 80 }
+  },
+  "rtx 5060 ti": {
+    vram: "8/16GB", arch: "Blackwell", perf: "Mid-high", release: 2025, tdp: "170W", msrp: "$429",
+    price2025_new: "$419", psu: "600W",
+    performance: { gaming: 120, editing: 106, modeling: 114, ai: 91 }
+  },
+  "rtx 5070": {
+    vram: "12GB", arch: "Blackwell", perf: "High-end", release: 2025, tdp: "200W", msrp: "$599",
+    price2025_new: "$589", psu: "650W",
+    performance: { gaming: 132, editing: 117, modeling: 126, ai: 104 }
+  },
+  "rtx 5070 ti": {
+    vram: "16GB", arch: "Blackwell", perf: "High-end+", release: 2025, tdp: "240W", msrp: "$699",
+    price2025_new: "$689", psu: "750W",
+    performance: { gaming: 138, editing: 124, modeling: 132, ai: 113 }
+  },
+  "rtx 5080": {
+    vram: "16GB", arch: "Blackwell", perf: "Enthusiast", release: 2025, tdp: "320W", msrp: "$999",
+    price2025_new: "$985", psu: "850W",
+    performance: { gaming: 146, editing: 138, modeling: 144, ai: 129 }
+  },
+  "rtx 5090": {
+    vram: "32GB", arch: "Blackwell", perf: "Insane", release: 2025, tdp: "450W", msrp: "$1799",
+    price2025_new: "$1799", psu: "1000W",
+    performance: { gaming: 150, editing: 150, modeling: 150, ai: 150 }
+  }
 });
-
+ 
 // =======================
 // AMD RX 500 Series
 // =======================
