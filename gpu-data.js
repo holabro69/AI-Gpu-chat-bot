@@ -242,47 +242,46 @@ Object.assign(gpuSpecs, {
 });
 
 // =======================
-// NVIDIA RTX 50 Series (ALL VARIANTS)
+// NVIDIA RTX 50 Series (PERF SCALE MATCHED TO YOUR DATA)
 // =======================
 Object.assign(gpuSpecs, {
   "rtx 5050": {
     vram: "8GB", arch: "Ada Lovelace Refresh", perf: "Entry+", release: 2025, tdp: "100W", msrp: "$229",
     price2025_new: "$220", psu: "450W",
-    performance: { gaming: 88, editing: 74, modeling: 81, ai: 62 }
+    performance: { gaming: 98, editing: 86, modeling: 91, ai: 72 }
   },
   "rtx 5060": {
     vram: "8GB", arch: "Blackwell", perf: "Mid-range", release: 2025, tdp: "140W", msrp: "$329",
     price2025_new: "$319", psu: "550W",
-    performance: { gaming: 108, editing: 94, modeling: 101, ai: 80 }
+    performance: { gaming: 106, editing: 94, modeling: 100, ai: 80 }
   },
   "rtx 5060 ti": {
-    vram: "8GB/16GB", arch: "Blackwell", perf: "Mid-high", release: 2025, tdp: "170W", msrp: "$429",
+    vram: "8GB", arch: "Blackwell", perf: "Mid-high", release: 2025, tdp: "170W", msrp: "$429",
     price2025_new: "$419", psu: "600W",
-    performance: { gaming: 120, editing: 106, modeling: 114, ai: 91 }
+    performance: { gaming: 115, editing: 103, modeling: 108, ai: 89 }
   },
   "rtx 5070": {
     vram: "12GB", arch: "Blackwell", perf: "High-end", release: 2025, tdp: "200W", msrp: "$599",
     price2025_new: "$589", psu: "650W",
-    performance: { gaming: 132, editing: 117, modeling: 126, ai: 104 }
+    performance: { gaming: 127, editing: 115, modeling: 120, ai: 102 }
   },
   "rtx 5070 ti": {
     vram: "16GB", arch: "Blackwell", perf: "High-end+", release: 2025, tdp: "240W", msrp: "$699",
     price2025_new: "$689", psu: "750W",
-    performance: { gaming: 138, editing: 124, modeling: 132, ai: 113 }
+    performance: { gaming: 137, editing: 125, modeling: 130, ai: 113 }
   },
   "rtx 5080": {
     vram: "16GB", arch: "Blackwell", perf: "Enthusiast", release: 2025, tdp: "320W", msrp: "$999",
     price2025_new: "$985", psu: "850W",
-    performance: { gaming: 146, editing: 138, modeling: 144, ai: 129 }
+    performance: { gaming: 150, editing: 139, modeling: 143, ai: 128 }
   },
   "rtx 5090": {
-    vram: "32GB", arch: "Blackwell", perf: "Insane", release: 2025, tdp: "450W", msrp: "$1799",
+    vram: "24GB", arch: "Blackwell", perf: "Insane", release: 2025, tdp: "450W", msrp: "$1799",
     price2025_new: "$1799", psu: "1000W",
-    performance: { gaming: 150, editing: 150, modeling: 150, ai: 150 }
+    performance: { gaming: 180, editing: 180, modeling: 180, ai: 180 }
   }
 });
 
- 
 // =======================
 // AMD RX 500 Series
 // =======================
